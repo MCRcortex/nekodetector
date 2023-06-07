@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 public class Gui {
     private static TextArea textArea;
-    private static JButton installDirectoryPicker;
+    private static JButton searchDirPicker;
     private static Path searchDir = Path.of(System.getProperty("user.home"));
 
     public static void main(String[] args) {
@@ -20,11 +20,11 @@ public class Gui {
         JPanel panel3 = new JPanel();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel installDirectoryPickerLabel = new JLabel("Select Search Directory:");
-        installDirectoryPickerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel searchDirPickerLabel = new JLabel("Select Search Directory:");
+        searchDirPickerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        installDirectoryPicker = new JButton(Path.of(System.getProperty("user.home")).toFile().getName());
-        installDirectoryPicker.addActionListener(e -> {
+        searchDirPicker = new JButton(Path.of(System.getProperty("user.home")).toFile().getName());
+        searchDirPicker.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fileChooser.setFileHidingEnabled(false);
@@ -32,7 +32,7 @@ public class Gui {
             if (option == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 searchDir = file.toPath();
-                installDirectoryPicker.setText(file.getName());
+                searchDirPicker.setText(file.getName());
             }
         });
 
@@ -43,11 +43,16 @@ public class Gui {
                 return out;
             });
 
+            Detector.checkForStage2(s -> {
+                textArea.append(s + "\n");
+                return s;
+            });
+
             textArea.append("Done scanning!");
         });
         panel2.add(runButton);
-        panel.add(installDirectoryPickerLabel);
-        panel.add(installDirectoryPicker);
+        panel.add(searchDirPickerLabel);
+        panel.add(searchDirPicker);
         panel3.add(createTextArea());
         frame.getContentPane().add(panel, BorderLayout.NORTH);
         frame.getContentPane().add(panel2, BorderLayout.CENTER);

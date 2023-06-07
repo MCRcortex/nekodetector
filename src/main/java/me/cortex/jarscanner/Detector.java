@@ -158,7 +158,7 @@ public class Detector {
      * Based on:
      * https://github.com/fractureiser-investigation/fractureiser#am-i-infected
      */
-    public static void checkForStage2() {
+    public static void checkForStage2(Function<String, String> output) {
         // windows checks
         Path windowsStartupDirectory = (Objects.isNull(System.getenv("APPDATA"))
                 ? Paths.get(System.getProperty("user.home"), "AppData", "Roaming")
@@ -179,7 +179,7 @@ public class Detector {
             // only checking for the folder because the file can be renamed
             File edgeFolder = new File(System.getenv("APPDATA") + "\\Microsoft Edge");
             if (edgeFolder.exists()) {
-                System.out.println("Matches: Stage 2 infection detected at " + edgeFolder.getAbsolutePath());
+                output.apply("Matches: Stage 2 infection detected at " + edgeFolder.getAbsolutePath());
             }
 
             File startFolder = new File("Microsoft\\Windows\\Start Menu\\Programs\\Startup");
@@ -191,7 +191,7 @@ public class Detector {
 
                     for (int j = 0; j < maliciousFiles.length; j++) {
                         if (startFiles[i].getName().equals(maliciousFiles[j])) {
-                            System.out.println(
+                            output.apply(
                                     "Matches: Stage 2 infection detected at " + startFiles[i].getAbsolutePath());
                         }
                     }

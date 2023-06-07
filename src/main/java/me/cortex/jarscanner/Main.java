@@ -34,7 +34,10 @@ public class Main {
 
     public static void run(int threadCount, Path path, boolean emitWalkErrors, Function<String, String> output) {
         executorService = Executors.newFixedThreadPool(threadCount);
-        Detector.checkForStage2();
+        Detector.checkForStage2(s -> {
+            System.out.println(s);
+            return s;
+        });
         boolean finalEmitWalkErrors = emitWalkErrors;
 
         // scan all jars in path
