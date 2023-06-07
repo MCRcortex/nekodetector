@@ -17,8 +17,12 @@ public class Main {
     public static int matches = 0;
 
     private static ExecutorService executorService;
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     public static void main(String[] args) throws Exception {
+        System.out.println(ANSI_GREEN + "Starting Scan -" + ANSI_RESET
+                + " this may take a while depending on the size of the directories and JAR files.");
         // Detector.scan(new JarFile("FloatingDamage.jar"), new
         // File("floatingdamage.jar").toPath());
         // if (true) return;
@@ -28,13 +32,17 @@ public class Main {
             return;
         }
 
-        run(Integer.parseInt(args[0]), new File(args[1]).toPath(), args.length > 2 && Boolean.parseBoolean(args[2]), s -> {
-            System.out.println(s);
-            return s;
-        });
+        run(Integer.parseInt(args[0]), new File(args[1]).toPath(), args.length > 2 && Boolean.parseBoolean(args[2]),
+                s -> {
+                    System.out.println(s);
+                    return s;
+                });
+
     }
 
     public static void run(int threadCount, Path path, boolean emitWalkErrors, Function<String, String> output) {
+        long start = System.currentTimeMillis();
+
         executorService = Executors.newFixedThreadPool(threadCount);
         Detector.checkForStage2(s -> {
             System.out.println(s);
@@ -55,12 +63,13 @@ public class Main {
                     if (!file.toString().endsWith(".jar")) {
                         return FileVisitResult.CONTINUE;
                     }
+                    System.out.println("Looking at file " + file);
                     JarFile jf;
                     try {
                         jf = new JarFile(file.toFile());
                     } catch (Exception e) {
                         if (finalEmitWalkErrors) {
-                            System.out.println("Failed to access jar: " + file);
+                            output.apply("Failed to access jar: " + file);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -89,7 +98,8 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Done scanning! " + Main.matches + " matches found.");
+        System.out.println(
+                ANSI_GREEN + "Scan Complete - " + Main.matches + " matches found. - " + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     /**

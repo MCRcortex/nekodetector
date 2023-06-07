@@ -2,7 +2,7 @@ plugins {
     id "java"
     id("com.github.johnrengelman.shadow") version "8.1.1"    
 }
-group 'org.example'
+group 'me.cortex'
 version '1.0-SNAPSHOT'
 
 repositories {

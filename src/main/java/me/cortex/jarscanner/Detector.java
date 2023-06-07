@@ -16,15 +16,28 @@ import java.util.jar.JarFile;
 import static org.objectweb.asm.Opcodes.*;
 
 public class Detector {
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
     public static void scan(JarFile file, Path path, Function<String, String> output) {
         try {
-            var matches = file.stream()
+            boolean matches = file.stream()
                     .filter(entry -> entry.getName().endsWith(".class"))
                     .anyMatch(entry -> {
                         try {
                             return scanClass(file.getInputStream(entry).readAllBytes());
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            System.out.println("Failed to scan due to an IO error: " + entry.getName());
+                            System.out.println("Error:" + e.getMessage());
+                            return false;
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Failed to scan due to a class parsing error: " + entry.getName());
+                            System.out.println(
+                                    "This is likely due to a malformed class file or an issue with the JAR file itself.");
+                            System.out.println("Error:" + e.getMessage());
+
+                            return false;
                         }
                     });
             try {
@@ -35,10 +48,10 @@ public class Detector {
             if (!matches)
                 return;
             Main.matches++;
-            output.apply("Matches: " + path);
+            output.apply(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
         } catch (Exception e) {
             e.printStackTrace();
-            output.apply("Failed to scan: "+ path);
+            output.apply("Failed to scan: " + path);
         }
     }
 
@@ -135,14 +148,16 @@ public class Detector {
     };
 
     private static boolean same(AbstractInsnNode a, AbstractInsnNode b) {
-        if (a instanceof TypeInsnNode aa) {
+        if (a instanceof TypeInsnNode) {
+            TypeInsnNode aa = (TypeInsnNode) a;
             return aa.desc.equals(((TypeInsnNode) b).desc);
         }
-        if (a instanceof MethodInsnNode aa) {
+        if (a instanceof MethodInsnNode) {
+            MethodInsnNode aa = (MethodInsnNode) a;
             return aa.owner.equals(((MethodInsnNode) b).owner) && aa.desc.equals(((MethodInsnNode) b).desc)
                     && aa.desc.equals(((MethodInsnNode) b).desc);
         }
-        if (a instanceof InsnNode aa) {
+        if (a instanceof InsnNode) {
             return true;
         }
         throw new IllegalArgumentException("TYPE NOT ADDED");
@@ -156,7 +171,7 @@ public class Detector {
         } catch (Exception e) {
             return false;// Yes this is very hacky but should never happen with valid clasees
         }
-        for (var method : node.methods) {
+        for (MethodNode method : node.methods) {
             {
                 // Method 1, this is a hard detect, if it matches this it is 100% chance
                 // infected
