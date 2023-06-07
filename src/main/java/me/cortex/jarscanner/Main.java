@@ -21,7 +21,9 @@ public class Main {
         // if (true) return;
 
         // check args
-        checkArgs(args);
+        if (!checkArgs(args)) {
+            return;
+        }
 
         executorService = Executors.newFixedThreadPool(Integer.parseInt(args[0]));
         Path path = new File(args[1]).toPath();
@@ -71,27 +73,29 @@ public class Main {
         executorService.awaitTermination(100000, TimeUnit.DAYS);
     }
 
-    private static void checkArgs(String[] args) {
+    private static boolean checkArgs(String[] args) {
         if (args.length == 0) {
             System.out.println(
                     "Usage: java -jar scanner.jar <threads:int> <scanpath:string> <optional 'y' for failed jar file opening>");
 
             System.out.println("Example: java -jar scanner.jar 4 C:\\Users\\Cortex\\Desktop\\ y");
-            return;
+            return false;
         }
 
         try {
             Integer.parseInt(args[0]);
         } catch (Exception e) {
             System.out.println("Invalid thread count, please use an integer");
-            return;
+            return false;
         }
 
         try {
             new File(args[1]).toPath();
         } catch (Exception e) {
             System.out.println("Invalid path, must be a directory");
-            return;
+            return false;
         }
+
+        return true;
     }
 }
