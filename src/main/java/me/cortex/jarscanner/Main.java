@@ -15,6 +15,8 @@ import java.util.jar.JarFile;
 public class Main {
     private static ExecutorService executorService;
     public static void main(String[] args) throws Exception {
+        //Detector.scan(new JarFile("FloatingDamage.jar"), new File("floatingdamage.jar").toPath());
+        //if (true) return;
         if (args.length == 0) {
             System.out.println("Usage: java -jar scanner.jar <threads:int> <scanpath:string> <optional 'y' for failed jar file opening>");
             return;
