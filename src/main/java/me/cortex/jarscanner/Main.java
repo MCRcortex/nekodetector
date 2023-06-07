@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +27,9 @@ public class Main {
         if (!checkArgs(args)) {
             return;
         }
+
+        // check for stage 2 infection
+        checkStage2();
 
         executorService = Executors.newFixedThreadPool(Integer.parseInt(args[0]));
         Path path = new File(args[1]).toPath();
@@ -75,6 +81,12 @@ public class Main {
         System.out.println("Done scanning");
     }
 
+    /**
+     * Checks the arguments passed to the program
+     * 
+     * @param args
+     * @return
+     */
     private static boolean checkArgs(String[] args) {
         if (args.length == 0) {
             System.out.println(
@@ -99,5 +111,37 @@ public class Main {
         }
 
         return true;
+    }
+
+    /**
+     * Checks for signs of stage 2 infection
+     * Based on:
+     * https://github.com/fractureiser-investigation/fractureiser#am-i-infected
+     */
+    private static void checkStage2() {
+
+        // windows checks
+        Path windowsStartupDirectory = (Objects.isNull(System.getenv("APPDATA"))
+                ? Paths.get(System.getProperty("user.home"), "AppData", "Roaming")
+                : Paths.get(System.getenv("APPDATA"), new String[0]))
+                .resolve(Paths.get("Microsoft", "Windows", "Start Menu", "Programs", "Startup"));
+        boolean windows = Files.isDirectory(windowsStartupDirectory, new LinkOption[0])
+                && Files.isWritable(windowsStartupDirectory);
+
+        if (windows) {
+            // only checking for the folder because the file can be renamed
+            File file = new File(System.getenv("APPDATA") + "\\Microsoft Edge");
+            if (file.exists()) {
+                System.out.println("Matches: Stage 2 infection detected at " + file.getAbsolutePath());
+            }
+        }
+
+        // linux checks
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            File file = new File("~/.config/.data/lib.jar");
+            if (file.exists()) {
+                System.out.println("Matches: Stage 2 infection detected at " + file.getAbsolutePath());
+            }
+        }
     }
 }
