@@ -3,6 +3,7 @@
 /build/
 /build/classes/java/main/
 /bin
+/.idea/
 
 # macOS junk files
 .DS_Store
