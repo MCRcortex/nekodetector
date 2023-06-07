@@ -53,12 +53,13 @@ public class Main {
                     if (!file.toString().endsWith(".jar")) {
                         return FileVisitResult.CONTINUE;
                     }
+                    System.out.println("Looking at file " + file);
                     JarFile jf;
                     try {
                         jf = new JarFile(file.toFile());
                     } catch (Exception e) {
                         if (finalEmitWalkErrors) {
-                            System.out.println("Failed to access jar: " + file.toString());
+                            output.apply("Failed to access jar: " + file.toString());
                         }
                         return FileVisitResult.CONTINUE;
                     }
