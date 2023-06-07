@@ -2,3 +2,6 @@
 /.gradle/
 /build/
 /build/classes/java/main/
+
+# macOS junk files
+.DS_Store
