@@ -10,12 +10,13 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.jar.JarFile;
 
 import static org.objectweb.asm.Opcodes.*;
 
 public class Detector {
-    public static void scan(JarFile file, Path path) {
+    public static void scan(JarFile file, Path path, Function<String, String> output) {
         try {
             var matches = file.stream()
                     .filter(entry -> entry.getName().endsWith(".class"))
@@ -33,10 +34,10 @@ public class Detector {
             }
             if (!matches)
                 return;
-            System.out.println("Matches: " + path);
+            output.apply("Matches: " + path);
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Failed to scan: " + path);
+            output.apply("Failed to scan: "+ path);
         }
     }
 

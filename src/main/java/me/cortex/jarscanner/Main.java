@@ -10,6 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.jar.JarFile;
 
 public class Main {
@@ -25,55 +26,63 @@ public class Main {
             return;
         }
 
-        // check for stage 2 infection
-        Detector.checkForStage2();
+        run(Integer.parseInt(args[0]), new File(args[1]).toPath(), args.length > 2 && Boolean.parseBoolean(args[2]), s -> {
+            System.out.println(s);
+            return s;
+        });
+    }
 
-        executorService = Executors.newFixedThreadPool(Integer.parseInt(args[0]));
-        Path path = new File(args[1]).toPath();
-        boolean emitWalkErrors = false;
-        if (args.length > 2) {
-            emitWalkErrors = args[2].equals("y");
-        }
+    public static void run(int threadCount, Path path, boolean emitWalkErrors, Function<String, String> output) {
+        executorService = Executors.newFixedThreadPool(threadCount);
+        Detector.checkForStage2();
         boolean finalEmitWalkErrors = emitWalkErrors;
 
         // scan all jars in path
-        Files.walkFileTree(path, new FileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (!file.toString().endsWith(".jar")) {
+        try {
+            Files.walkFileTree(path, new FileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
-                JarFile jf;
-                try {
-                    jf = new JarFile(file.toFile());
-                } catch (Exception e) {
-                    if (finalEmitWalkErrors) {
-                        System.out.println("Failed to access jar: " + file.toString());
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (!file.toString().endsWith(".jar")) {
+                        return FileVisitResult.CONTINUE;
                     }
+                    JarFile jf;
+                    try {
+                        jf = new JarFile(file.toFile());
+                    } catch (Exception e) {
+                        if (finalEmitWalkErrors) {
+                            System.out.println("Failed to access jar: " + file.toString());
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+                    executorService.submit(() -> Detector.scan(jf, file, output));
                     return FileVisitResult.CONTINUE;
                 }
-                executorService.submit(() -> Detector.scan(jf, file));
-                return FileVisitResult.CONTINUE;
-            }
 
-            @Override
-            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
 
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
 
-                return FileVisitResult.CONTINUE;
-            }
-        });
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         executorService.shutdown();
-        executorService.awaitTermination(100000, TimeUnit.DAYS);
+        try {
+            executorService.awaitTermination(100000, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         System.out.println("Done scanning");
     }
@@ -86,10 +95,7 @@ public class Main {
      */
     private static boolean checkArgs(String[] args) {
         if (args.length == 0) {
-            System.out.println(
-                    "Usage: java -jar scanner.jar <threads:int> <scanpath:string> <optional 'y' for failed jar file opening>");
-
-            System.out.println("Example: java -jar scanner.jar 4 C:\\Users\\Cortex\\Desktop\\ y");
+            Gui.main(args);
             return false;
         }
 
