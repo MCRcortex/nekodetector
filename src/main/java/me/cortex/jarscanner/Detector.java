@@ -21,14 +21,14 @@ public class Detector {
                             throw new RuntimeException(e);
                         }
                     });
-            if (!matches)
-                return;
-            System.out.println("Matches: " + path);
             try {
                 file.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if (!matches)
+                return;
+            System.out.println("Matches: " + path);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Failed to scan: "+ path);
