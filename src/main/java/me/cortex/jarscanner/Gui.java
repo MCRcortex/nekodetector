@@ -48,16 +48,22 @@ public class Gui {
 
         JButton runButton = new JButton("Run!");
         runButton.addActionListener(e -> {
-            try {
-                Main.run(4, searchDir, true, out -> {
-                    textArea.append(out + "\n");
-                    return out;
-                });
-            } catch (Exception ex) {
-                textArea.append("Error while running scan!" + "\n");
-            }
+            new Thread(() -> {
+                searchDirPicker.setEnabled(false);
+                runButton.setEnabled(false);
+                try {
+                    Main.run(4, searchDir, true, out -> {
+                        textArea.append(out + "\n");
+                        return out;
+                    });
+                } catch (Exception ex) {
+                    textArea.append("Error while running scan!" + "\n");
+                }
 
-            textArea.append("Scan Complete - " + Main.matches.get() + " matches found.");
+                textArea.append("Done scanning!");
+                searchDirPicker.setEnabled(true);
+                runButton.setEnabled(true);
+            }).start();
         });
         panel2.add(runButton);
         panel2.add(credsButton);
@@ -76,7 +82,7 @@ public class Gui {
 
     }
 
-    private static String[] credits = new String[] {
+    private static String[] credits = new String[]{
             "Credits to:",
             "Cortex, for decompiling and deobfuscating the malware, and making the initial detector.",
             "D3SL: Extensive reverse engineering, early discovery learned of later",
