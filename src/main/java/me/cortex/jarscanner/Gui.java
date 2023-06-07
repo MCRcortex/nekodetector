@@ -3,6 +3,7 @@ package me.cortex.jarscanner;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class Gui {
@@ -47,17 +48,14 @@ public class Gui {
 
         JButton runButton = new JButton("Run!");
         runButton.addActionListener(e -> {
-            textArea.append("\n" + "Starting Scan -"
-                               + " this may take a while depending on the size of the directories and JAR files.");
-            Main.run(4, searchDir, true, out -> {
-                textArea.append(out + "\n");
-                return out;
-            });
-
-            Detector.checkForStage2(s -> {
-                textArea.append(s + "\n");
-                return s;
-            });
+            try {
+                Main.run(4, searchDir, true, out -> {
+                    textArea.append(out + "\n");
+                    return out;
+                });
+            } catch (Exception ex) {
+                textArea.append("Error while running scan!" + "\n");
+            }
 
             textArea.append("Scan Complete - " + Main.matches.get() + " matches found.");
         });
