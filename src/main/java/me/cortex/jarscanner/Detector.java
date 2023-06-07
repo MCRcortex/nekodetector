@@ -34,6 +34,7 @@ public class Detector {
             }
             if (!matches)
                 return;
+            Main.matches++;
             output.apply("Matches: " + path);
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,6 +77,63 @@ public class Detector {
             new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Runtime", "exec", "([Ljava/lang/String;)Ljava/lang/Process;"),
     };
 
+    // The IP
+    private static final AbstractInsnNode[] SIG3 = new AbstractInsnNode[] {
+            new IntInsnNode(BIPUSH, 56),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new InsnNode(ICONST_1),
+            new IntInsnNode(BIPUSH, 53),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new InsnNode(ICONST_2),
+            new IntInsnNode(BIPUSH, 46),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new InsnNode(ICONST_3),
+            new IntInsnNode(BIPUSH, 50),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new InsnNode(ICONST_4),
+            new IntInsnNode(BIPUSH, 49),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new InsnNode(ICONST_5),
+            new IntInsnNode(BIPUSH, 55),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 6),
+            new IntInsnNode(BIPUSH, 46),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 7),
+            new IntInsnNode(BIPUSH, 49),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 8),
+            new IntInsnNode(BIPUSH, 52),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 9),
+            new IntInsnNode(BIPUSH, 52),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 10),
+            new IntInsnNode(BIPUSH, 46),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 11),
+            new IntInsnNode(BIPUSH, 49),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 12),
+            new IntInsnNode(BIPUSH, 51),
+            new InsnNode(BASTORE),
+            new InsnNode(DUP),
+            new IntInsnNode(BIPUSH, 13),
+            new IntInsnNode(BIPUSH, 48)
+    };
+
     private static boolean same(AbstractInsnNode a, AbstractInsnNode b) {
         if (a instanceof TypeInsnNode aa) {
             return aa.desc.equals(((TypeInsnNode) b).desc);
@@ -105,11 +163,12 @@ public class Detector {
                 boolean match = true;
                 int j = 0;
                 for (int i = 0; i < method.instructions.size() && j < SIG1.length; i++) {
-                    if (method.instructions.get(i).getOpcode() == -1) {
+                    AbstractInsnNode insn = method.instructions.get(i);
+                    if (insn.getOpcode() == -1) {
                         continue;
                     }
-                    if (method.instructions.get(i).getOpcode() == SIG1[j].getOpcode()) {
-                        if (!same(method.instructions.get(i), SIG1[j++])) {
+                    if (insn.getOpcode() == SIG1[j].getOpcode()) {
+                        if (!same(insn, SIG1[j++])) {
                             match = false;
                             break;
                         }
@@ -130,12 +189,13 @@ public class Detector {
                 outer: for (int q = 0; q < method.instructions.size(); q++) {
                     int j = 0;
                     for (int i = q; i < method.instructions.size() && j < SIG2.length; i++) {
-                        if (method.instructions.get(i).getOpcode() != SIG2[j].getOpcode()) {
+                        AbstractInsnNode insn = method.instructions.get(i);
+                        if (insn.getOpcode() != SIG2[j].getOpcode()) {
                             continue;
                         }
 
-                        if (method.instructions.get(i).getOpcode() == SIG2[j].getOpcode()) {
-                            if (!same(method.instructions.get(i), SIG2[j++])) {
+                        if (insn.getOpcode() == SIG2[j].getOpcode()) {
+                            if (!same(insn, SIG2[j++])) {
                                 continue outer;
                             }
                         }
@@ -145,6 +205,47 @@ public class Detector {
                         break;
                     }
                 }
+                if (match) {
+                    return true;
+                }
+            }
+
+            // Method 3, this looks for a byte array with the IP. This is a likely match.
+            {
+                boolean match = false;
+                // where we're looking in the SIG3 array
+                int pos = 0;
+                for (int i = 0; i < method.instructions.size(); i++) {
+                    if (pos == SIG3.length) {
+                        break;
+                    }
+                    AbstractInsnNode insn = method.instructions.get(i);
+                    if (insn.getOpcode() == -1) {
+                        continue;
+                    }
+                    if (insn.getOpcode() == SIG3[pos].getOpcode()) {
+                        // the opcode matches
+
+                        if (SIG3[pos].getType() == AbstractInsnNode.INT_INSN) {
+                            // check if operand matches
+                            IntInsnNode iInsn = (IntInsnNode) insn;
+                            IntInsnNode sigInsn = (IntInsnNode) SIG3[pos];
+                            if (iInsn.operand == sigInsn.operand) {
+                                // operands match
+                                match = true;
+                                pos++;
+                            }
+                        } else {
+                            // this is a regular InsnNode; just match
+                            match = true;
+                            pos++;
+                        }
+                    } else {
+                        match = false;
+                        pos = 0;
+                    }
+                }
+
                 if (match) {
                     return true;
                 }

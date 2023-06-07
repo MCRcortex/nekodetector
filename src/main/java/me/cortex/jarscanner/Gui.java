@@ -48,7 +48,7 @@ public class Gui {
                 return s;
             });
 
-            textArea.append("Done scanning!");
+            textArea.append("Done scanning! " + Main.matches + " matches found.");
         });
         panel2.add(runButton);
         panel.add(searchDirPickerLabel);

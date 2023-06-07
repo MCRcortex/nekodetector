@@ -14,6 +14,8 @@ import java.util.function.Function;
 import java.util.jar.JarFile;
 
 public class Main {
+    public static int matches = 0;
+
     private static ExecutorService executorService;
 
     public static void main(String[] args) throws Exception {
@@ -58,7 +60,7 @@ public class Main {
                         jf = new JarFile(file.toFile());
                     } catch (Exception e) {
                         if (finalEmitWalkErrors) {
-                            System.out.println("Failed to access jar: " + file.toString());
+                            System.out.println("Failed to access jar: " + file);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -87,7 +89,7 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Done scanning");
+        System.out.println("Done scanning! " + Main.matches + " matches found.");
     }
 
     /**
