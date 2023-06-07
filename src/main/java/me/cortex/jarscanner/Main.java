@@ -65,7 +65,7 @@ public class Main {
                 return FileVisitResult.CONTINUE;
             }
         });
-        executorService.awaitTermination(100000, TimeUnit.DAYS);
         executorService.shutdown();
+        executorService.awaitTermination(100000, TimeUnit.DAYS);
     }
 }
