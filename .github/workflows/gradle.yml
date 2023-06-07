@@ -1,0 +1,28 @@
+name: Build on push or pull request
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+          arguments: build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: build/libs
