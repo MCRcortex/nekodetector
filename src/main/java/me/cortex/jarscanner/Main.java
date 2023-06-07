@@ -14,22 +14,24 @@ import java.util.jar.JarFile;
 
 public class Main {
     private static ExecutorService executorService;
-    public static void main(String[] args) throws Exception {
-        //Detector.scan(new JarFile("FloatingDamage.jar"), new File("floatingdamage.jar").toPath());
-        //if (true) return;
-        if (args.length == 0) {
-            System.out.println("Usage: java -jar scanner.jar <threads:int> <scanpath:string> <optional 'y' for failed jar file opening>");
-            return;
-        }
 
+    public static void main(String[] args) throws Exception {
+        // Detector.scan(new JarFile("FloatingDamage.jar"), new
+        // File("floatingdamage.jar").toPath());
+        // if (true) return;
+
+        // check args
+        checkArgs(args);
 
         executorService = Executors.newFixedThreadPool(Integer.parseInt(args[0]));
         Path path = new File(args[1]).toPath();
         boolean emitWalkErrors = false;
-        if (args.length>2) {
+        if (args.length > 2) {
             emitWalkErrors = args[2].equals("y");
         }
         boolean finalEmitWalkErrors = emitWalkErrors;
+
+        // scan all jars in path
         Files.walkFileTree(path, new FileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -43,14 +45,14 @@ public class Main {
                 }
                 JarFile jf;
                 try {
-                    jf =new JarFile(file.toFile());
+                    jf = new JarFile(file.toFile());
                 } catch (Exception e) {
                     if (finalEmitWalkErrors) {
-                        System.out.println("Failed to scan jar: " + file.toString());
+                        System.out.println("Failed to access jar: " + file.toString());
                     }
                     return FileVisitResult.CONTINUE;
                 }
-                executorService.submit(()->Detector.scan(jf, file));
+                executorService.submit(() -> Detector.scan(jf, file));
                 return FileVisitResult.CONTINUE;
             }
 
@@ -67,5 +69,29 @@ public class Main {
         });
         executorService.shutdown();
         executorService.awaitTermination(100000, TimeUnit.DAYS);
+    }
+
+    private static void checkArgs(String[] args) {
+        if (args.length == 0) {
+            System.out.println(
+                    "Usage: java -jar scanner.jar <threads:int> <scanpath:string> <optional 'y' for failed jar file opening>");
+
+            System.out.println("Example: java -jar scanner.jar 4 C:\\Users\\Cortex\\Desktop\\ y");
+            return;
+        }
+
+        try {
+            Integer.parseInt(args[0]);
+        } catch (Exception e) {
+            System.out.println("Invalid thread count, please use an integer");
+            return;
+        }
+
+        try {
+            new File(args[1]).toPath();
+        } catch (Exception e) {
+            System.out.println("Invalid path, must be a directory");
+            return;
+        }
     }
 }
