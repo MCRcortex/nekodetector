@@ -59,8 +59,6 @@ public class Detector {
             new MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V"),
             new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Class", "getMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"),
             new MethodInsnNode(INVOKEVIRTUAL, "java/lang/reflect/Method", "invoke", "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;"),
-            new InsnNode(RETURN),
-
     };
     private static boolean same(AbstractInsnNode a, AbstractInsnNode b) {
         if (a instanceof TypeInsnNode aa) {
@@ -84,7 +82,7 @@ public class Detector {
             if (true) {
                 boolean match = true;
                 int j = 0;
-                for (int i = 0; i < method.instructions.size(); i++) {
+                for (int i = 0; i < method.instructions.size() && j < HARDMATCH.length; i++) {
                     if (method.instructions.get(i).getOpcode() == -1) {
                         continue;
                     }
