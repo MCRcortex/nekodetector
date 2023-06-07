@@ -34,6 +34,7 @@ public class Main {
 
     public static void run(int threadCount, Path path, boolean emitWalkErrors, Function<String, String> output) {
         executorService = Executors.newFixedThreadPool(threadCount);
+        Detector.checkForStage2();
         boolean finalEmitWalkErrors = emitWalkErrors;
 
         // scan all jars in path
@@ -86,6 +87,12 @@ public class Main {
         System.out.println("Done scanning");
     }
 
+    /**
+     * Checks the arguments passed to the program
+     * 
+     * @param args
+     * @return
+     */
     private static boolean checkArgs(String[] args) {
         if (args.length == 0) {
             Gui.main(args);
