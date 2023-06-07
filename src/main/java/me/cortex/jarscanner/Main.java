@@ -71,6 +71,8 @@ public class Main {
         });
         executorService.shutdown();
         executorService.awaitTermination(100000, TimeUnit.DAYS);
+
+        System.out.println("Done scanning");
     }
 
     private static boolean checkArgs(String[] args) {
