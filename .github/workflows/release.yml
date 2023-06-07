@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  create_release:
+    needs: build_release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Grab and store version
+        run: |
+          tag_name=$(echo ${{ github.ref }} | grep -oE "[^/]+$")
+          echo "VERSION=$tag_name" >> $GITHUB_ENV
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+          # specify the build version, overrides whatever is in the build.gradle file
+          arguments: build -PoverrideVersion=${{ env.VERSION }}
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Neko Detector ${{ env.VERSION }}
+          draft: true
+          prerelease: false
+          files: |
+            jarscaner-${{ env.VERSION }}.jar
