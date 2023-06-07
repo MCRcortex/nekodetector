@@ -45,4 +45,4 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            jarscaner-${{ env.VERSION }}.jar
+            jarscanner-${{ env.VERSION }}.jar
