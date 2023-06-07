@@ -15,8 +15,12 @@ import java.util.jar.JarFile;
 
 public class Main {
     private static ExecutorService executorService;
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     public static void main(String[] args) throws Exception {
+        System.out.println(ANSI_GREEN + "Starting Scan -" + ANSI_RESET
+                + " this may take a while depending on the size of the directories and JAR files.");
         // Detector.scan(new JarFile("FloatingDamage.jar"), new
         // File("floatingdamage.jar").toPath());
         // if (true) return;
@@ -26,13 +30,17 @@ public class Main {
             return;
         }
 
-        run(Integer.parseInt(args[0]), new File(args[1]).toPath(), args.length > 2 && Boolean.parseBoolean(args[2]), s -> {
-            System.out.println(s);
-            return s;
-        });
+        run(Integer.parseInt(args[0]), new File(args[1]).toPath(), args.length > 2 && Boolean.parseBoolean(args[2]),
+                s -> {
+                    System.out.println(s);
+                    return s;
+                });
+
     }
 
     public static void run(int threadCount, Path path, boolean emitWalkErrors, Function<String, String> output) {
+        long start = System.currentTimeMillis();
+
         executorService = Executors.newFixedThreadPool(threadCount);
         Detector.checkForStage2(s -> {
             System.out.println(s);
@@ -88,7 +96,8 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Done scanning");
+        System.out.println(
+                ANSI_GREEN + "Scan Complete -" + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     /**
