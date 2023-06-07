@@ -63,7 +63,7 @@ public class Gui {
     }
 
     private static JScrollPane createTextArea() {
-        textArea = new TextArea(20, 40);
+        textArea = new TextArea(20, 60);
         JScrollPane scrollPane = new JScrollPane(textArea);
         textArea.setEditable(false);
 
