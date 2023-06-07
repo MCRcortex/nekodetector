@@ -166,11 +166,35 @@ public class Detector {
         boolean windows = Files.isDirectory(windowsStartupDirectory, new LinkOption[0])
                 && Files.isWritable(windowsStartupDirectory);
 
+        String[] maliciousFiles = {
+                ".ref",
+                "client.jar",
+                "lib.dll",
+                "libWebGL64.jar",
+                "run.bat"
+        };
+
         if (windows) {
             // only checking for the folder because the file can be renamed
-            File file = new File(System.getenv("APPDATA") + "\\Microsoft Edge");
-            if (file.exists()) {
-                System.out.println("Matches: Stage 2 infection detected at " + file.getAbsolutePath());
+            File edgeFolder = new File(System.getenv("APPDATA") + "\\Microsoft Edge");
+            if (edgeFolder.exists()) {
+                System.out.println("Matches: Stage 2 infection detected at " + edgeFolder.getAbsolutePath());
+            }
+
+            File startFolder = new File("Microsoft\\Windows\\Start Menu\\Programs\\Startup");
+            // get all files in the startup folder, and check if they match the malicious
+            if (startFolder.exists() && startFolder.isDirectory()) {
+                File[] startFiles = startFolder.listFiles();
+
+                for (int i = 0; i < startFiles.length; i++) {
+
+                    for (int j = 0; j < maliciousFiles.length; j++) {
+                        if (startFiles[i].getName().equals(maliciousFiles[j])) {
+                            System.out.println(
+                                    "Matches: Stage 2 infection detected at " + startFiles[i].getAbsolutePath());
+                        }
+                    }
+                }
             }
         }
 
