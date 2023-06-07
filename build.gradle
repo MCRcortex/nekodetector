@@ -27,4 +27,14 @@ tasks.shadowJar {
 }
 tasks.build {
     dependsOn(shadowJar)
+    if (project.hasProperty("overrideVersion")) {
+        project.setVersion(overrideVersion)
+        println "Overrided project version to: " + version
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'me.cortex.jarscanner.Main'
+    }
 }
