@@ -17,13 +17,13 @@ import java.nio.file.Path;
  * </ul>
  */
 public interface Detection {
-	/**
-	 * @param jarPath
-	 * 		Jar containing the class being scanned.
-	 * @param node
-	 * 		Class node to scan in.
-	 * @param sink
-	 * 		Sink to feed detection items into.
-	 */
-	void scan(@Nonnull Path jarPath, @Nonnull ClassNode node, @Nonnull DetectionSink sink);
+
+    String getName();
+
+    /**
+     * @param jarPath Jar containing the class being scanned.
+     * @param node    Class node to scan in.
+     * @param sink    Sink to feed detection items into.
+     */
+    void scan(@Nonnull Path jarPath, @Nonnull ClassNode node, @Nonnull DetectionSink sink);
 }
