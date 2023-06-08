@@ -7,8 +7,10 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -64,7 +66,7 @@ public class Main {
                     if (!file.toString().endsWith(".jar")) {
                         return FileVisitResult.CONTINUE;
                     }
-                    //System.out.println("Looking at file " + file);
+                    // System.out.println("Looking at file " + file);
                     JarFile jf;
                     try {
                         jf = new JarFile(file.toFile());
@@ -74,7 +76,14 @@ public class Main {
                         }
                         return FileVisitResult.CONTINUE;
                     }
-                    executorService.submit(() -> Detector.scan(jf, file, output));
+
+                    Future<?> handler = executorService.submit(() -> Detector.scan(jf, file, output));
+                    try {
+                        handler.get(Duration.ofSeconds(600).toMillis(), TimeUnit.MILLISECONDS);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     return FileVisitResult.CONTINUE;
                 }
 
@@ -100,7 +109,8 @@ public class Main {
         }
 
         System.out.println(
-                ANSI_GREEN + "Scan Complete - " + ANSI_RESET + Main.matches + " matches found. - " + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
+                ANSI_GREEN + "Scan Complete - " + ANSI_RESET + Main.matches + " matches found. - " + ANSI_RESET
+                        + " took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     /**
