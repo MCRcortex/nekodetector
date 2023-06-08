@@ -81,7 +81,9 @@ public class Main {
                     try {
                         handler.get(Duration.ofSeconds(600).toMillis(), TimeUnit.MILLISECONDS);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        handler.cancel(true);
+                        System.out.println("Timedout scanning jar: " + file.toString());
+                        System.out.println("Error: " + e.toString());
                     }
 
                     return FileVisitResult.CONTINUE;
