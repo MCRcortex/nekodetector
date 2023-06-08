@@ -1,4 +1,4 @@
-# Neko Dectector 
+# Neko Detector 
 
 > A tool to help detect if you are infected by the fractureiser malware.
 
