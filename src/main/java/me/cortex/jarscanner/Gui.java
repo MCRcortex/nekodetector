@@ -47,6 +47,8 @@ public class Gui {
 
         JButton runButton = new JButton("Run!");
         runButton.addActionListener(e -> {
+            textArea.append("\n" + "Starting Scan -"
+                               + " this may take a while depending on the size of the directories and JAR files.");
             Main.run(4, searchDir, true, out -> {
                 textArea.append(out + "\n");
                 return out;
