@@ -31,7 +31,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+          cache-disabled: true
           # specify the build version, overrides whatever is in the build.gradle file
           arguments: build -PoverrideVersion=${{ env.VERSION }}
 
@@ -45,5 +45,4 @@ jobs:
           name: Neko Detector ${{ env.VERSION }}
           draft: true
           prerelease: false
-          files: |
-            jarscanner-${{ env.VERSION }}.jar
+          files: build/libs/*

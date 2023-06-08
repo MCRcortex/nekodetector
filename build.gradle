@@ -1,14 +1,28 @@
 plugins {
     id "java"
-    id("com.github.johnrengelman.shadow") version "8.1.1"    
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 group 'me.cortex'
 version '1.0-SNAPSHOT'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 repositories {
     mavenCentral()
+}
+
+// Reproducible builds
+// https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 }
 
 dependencies {
@@ -20,13 +34,13 @@ test {
     useJUnitPlatform()
 }
 
-
 tasks.shadowJar {
     archiveClassifier.set("")
     manifest {
         attributes "Main-Class": "me.cortex.jarscanner.Main"
     }
 }
+
 tasks.build {
     dependsOn(shadowJar)
     if (project.hasProperty("overrideVersion")) {
