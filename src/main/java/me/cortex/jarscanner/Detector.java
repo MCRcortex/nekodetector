@@ -352,9 +352,16 @@ public class Detector {
 
         // linux checks
         if (System.getProperty("os.name").toLowerCase().contains("linux")) {
-            File file = new File("~/.config/.data/lib.jar");
-            if (file.exists()) {
-                suspiciousFilesFound.add(file.getAbsolutePath());
+            String[] linuxMaliciousPaths = {
+                    "~/.config/.data/lib.jar",
+                    "/etc/systemd/system/systemd-utility.service",
+                    "~/.config/systemd/user/systemd-utility.service"
+            };
+            for (String maliciousPath : linuxMaliciousPaths) {
+                File file = new File(maliciousPath);
+                if (file.exists()) {
+                    suspiciousFilesFound.add(file.getAbsolutePath());
+                }
             }
         }
 
