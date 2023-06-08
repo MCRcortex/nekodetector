@@ -10,11 +10,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.jar.JarFile;
 
 public class Main {
-    public static int matches = 0;
+    public static AtomicInteger matches = new AtomicInteger(0);
 
     private static ExecutorService executorService;
     public static final String ANSI_GREEN = "\u001B[32m";
@@ -99,7 +100,7 @@ public class Main {
         }
 
         System.out.println(
-                ANSI_GREEN + "Scan Complete - " + ANSI_RESET + Main.matches + " matches found. - " + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
+                ANSI_GREEN + "Scan Complete - " + ANSI_RESET + Main.matches.get() + " matches found. - " + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     /**

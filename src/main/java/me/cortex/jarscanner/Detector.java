@@ -47,7 +47,7 @@ public class Detector {
             }
             if (!matches)
                 return;
-            Main.matches++;
+            Main.matches.addAndGet(1);
             output.apply(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
         } catch (Exception e) {
             e.printStackTrace();
