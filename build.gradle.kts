@@ -59,10 +59,6 @@ tasks {
         manifest {
             attributes(
                     "Main-Class" to mainClassName,
-                    "Built-By" to System.getProperty("user.name"),
-                    "Built-Jdk" to System.getProperty("java.version"),
-                    "Implementation-Title" to project.name,
-                    "Implementation-Version" to project.version.toString(),
             )
         }
     }
