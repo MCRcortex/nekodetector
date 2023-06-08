@@ -39,8 +39,9 @@ public class RootScanCommand implements Callable<RootScanSummary> {
     public RootScanSummary call() throws IOException {
         // Scan for everything
         List<Detection> detectionsToScanFor = DetectionManager.getInstance().getDetections();
-
-        logger.info("Running detectors: {}", detectionsToScanFor.stream().map(Detection::getName).collect(Collectors.joining(", ")));
+        logger.info("Running detectors: \n - {}", detectionsToScanFor.stream()
+                .map(Detection::getName)
+                .collect(Collectors.joining("\n - ")));
 
         // Run new scanner
         Scanner<RootScanSummary> scanner = new RootScanner(this.threads, this.timeoutMinutes, detectionsToScanFor);

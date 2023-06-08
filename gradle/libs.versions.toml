@@ -2,7 +2,7 @@
 
 asm = "9.5"
 cafedude = "1.10.2"
-lljzip = "1.3.0"
+lljzip = "1.3.2"
 picocli = "4.7.4"
 jsr305 = "3.0.2"
 slf4j = "2.0.7"

@@ -1,12 +1,17 @@
 package me.cortex.jarscanner.scanner.summary;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class RootScanSummary implements ScanSummary {
-    // TODO: outline
+	private final List<JarScanSummary> jarScanSummaries;
 
-    public static RootScanSummary fromJarScans(List<JarScanSummary> jarScans) {
-        // TODO: Summarize data
-        return null;
-    }
+	public RootScanSummary(@Nonnull List<JarScanSummary> jarScanSummaries) {
+		this.jarScanSummaries = jarScanSummaries;
+	}
+
+	@Nonnull
+	public List<JarScanSummary> getJarScanSummaries() {
+		return jarScanSummaries;
+	}
 }

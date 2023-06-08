@@ -17,7 +17,10 @@ import java.nio.file.Path;
  * </ul>
  */
 public interface Detection {
-
+    /**
+     * @return Name of the detection pattern.
+     */
+    @Nonnull
     String getName();
 
     /**

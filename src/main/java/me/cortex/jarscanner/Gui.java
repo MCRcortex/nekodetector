@@ -20,6 +20,7 @@ public final class Gui {
             "williewillus: Coordination, journalist",
             "quat: Documentation, initial infected sample research",
             "xylemlandmark: Coordination of documentation, crowd control",
+            "Col-E: Deobfuscation/tooling assistance",
             "Vazkii: they're pretty neat",
             "Elocin: Originally finding the malware itself"
     };
@@ -41,7 +42,6 @@ public final class Gui {
         JPanel panel = new JPanel();
         JPanel panel2 = new JPanel();
         JPanel panel3 = new JPanel();
-        JPanel credsPanel = new JPanel();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel searchDirPickerLabel = new JLabel("Select Search Directory:");

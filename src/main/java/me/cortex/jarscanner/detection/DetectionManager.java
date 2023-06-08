@@ -14,14 +14,13 @@ import java.util.List;
  */
 public final class DetectionManager {
     private static final DetectionManager instance = new DetectionManager();
+    private final List<Detection> detections = new ArrayList<>();
 
     static {
         instance.addDetection(new FractureiserStage0a());
         instance.addDetection(new FractureiserStage0b());
         instance.addDetection(new FractureiserStage0c());
     }
-
-    private final List<Detection> detections = new ArrayList<>();
 
     private DetectionManager() {
         // deny construction

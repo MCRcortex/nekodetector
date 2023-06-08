@@ -38,9 +38,10 @@ public class DetectionProblem {
 
 	@Override
 	public String toString() {
-		return "DetectionProblem{" +
-				"throwable=" + throwable +
-				", message='" + message + '\'' +
-				'}';
+		if (throwable != null) {
+			return throwable.getMessage();
+		} else {
+			return message;
+		}
 	}
 }
