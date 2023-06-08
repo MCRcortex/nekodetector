@@ -48,7 +48,8 @@ public class Detector {
             if (!matches)
                 return;
             Main.matches.addAndGet(1);
-            output.apply(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
+            System.out.println(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
+            output.apply("[!] Match Found At: " + path);
         } catch (Exception e) {
             e.printStackTrace();
             output.apply("Failed to scan: " + path);
