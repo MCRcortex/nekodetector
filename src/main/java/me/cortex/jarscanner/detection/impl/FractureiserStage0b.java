@@ -15,7 +15,7 @@ import static java.lang.reflect.Modifier.isStatic;
 /**
  * Detection for <a href="https://github.com/fractureiser-investigation/fractureiser/blob/main/docs/tech.md#stage-0-infected-mod-jars">Fractureiser stage 0.</a>
  */
-public class FractureiserStage0b extends AbstractDetection implements Detection, Opcodes {
+public class FractureiserStage0b extends AbstractDetection implements Detection {
     // Method B, this is a hard detect, if it matches this it is 100% chance infected
     private static final AbstractInsnNode[] SIG = {
             new TypeInsnNode(Opcodes.NEW, "java/lang/String"),
