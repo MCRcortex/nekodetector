@@ -1,0 +1,41 @@
+<configuration>
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+    <timestamp key="startTimestamp" datePattern="yyyyMMddHHmmssSSS"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--<withJansi>true</withJansi>-->
+        <encoder>
+            <pattern>%d %-24([%.-22(%thread)]) %highlight(%-5level) %-48logger{48} -
+                %highlight(%msg){}%n{}%ex{full,DISPLAY_EX_EVAL}
+            </pattern>
+        </encoder>
+    </appender>
+    <property name="LOG_DIR" value="logs/"/>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/nekodetector.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_DIR}/nekodetector.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- keep 60 days worth of history capped at 5GB total size & 10MB per file -->
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %-32([%.-30(%thread)]) %-5level %-64logger{64} - %msg{}%n{}%ex{full, DISPLAY_EX_EVAL}</pattern>
+        </encoder>
+    </appender>
+
+    <logger level="DEBUG" name="me.cortex.jarscanner" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <!--    <logger level="INFO">-->
+    <!--        <appender-ref ref="STDOUT"/>-->
+    <!--    </logger>-->
+</configuration>
