@@ -114,7 +114,7 @@ public class Detector {
     private static final AbstractInsnNode[] SIG2 = new AbstractInsnNode[] {
             new MethodInsnNode(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;"),
             new MethodInsnNode(INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;"),
-            new MethodInsnNode(INVOKEVIRTUAL, "java/lang/String", "INVOKEVIRTUAL",
+            new MethodInsnNode(INVOKEVIRTUAL, "java/lang/String", "concat",
                     "(Ljava/lang/String;)Ljava/lang/String;"), // TODO:FIXME: this might not be in all of them
             new MethodInsnNode(INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B"),
             new MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V"),
