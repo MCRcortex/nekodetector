@@ -1,6 +1,8 @@
 package me.cortex.jarscanner.detection;
 
+import me.cortex.jarscanner.detection.impl.FractureiserStage0a;
 import me.cortex.jarscanner.detection.impl.FractureiserStage0b;
+import me.cortex.jarscanner.detection.impl.FractureiserStage0c;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ public class DetectionManager {
 	}
 
 	static {
+		instance.addDetection(new FractureiserStage0a());
 		instance.addDetection(new FractureiserStage0b());
+		instance.addDetection(new FractureiserStage0c());
 	}
 }
