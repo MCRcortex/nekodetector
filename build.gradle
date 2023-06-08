@@ -4,8 +4,15 @@ plugins {
 }
 group 'me.cortex'
 version '1.0-SNAPSHOT'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 repositories {
     mavenCentral()
