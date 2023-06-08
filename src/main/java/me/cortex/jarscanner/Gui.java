@@ -73,7 +73,7 @@ public final class Gui {
                 RootScanner scanner = new RootScanner(searchDir,
                         Runtime.getRuntime().availableProcessors() - 1,
                         Integer.MAX_VALUE,
-                        DetectionManager.getInstance().getDetectionImplementations());
+                        DetectionManager.getInstance().getDetections());
                 RootScanSummary summary = scanner.run();
                 textArea.append(summary.toString());
             } catch (Exception ex) {

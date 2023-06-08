@@ -35,7 +35,7 @@ public class RootScannerTask implements Callable<RootScanSummary> {
     @Override
     public RootScanSummary call() throws IOException {
         // Scan for everything
-        List<Detection> detectionsToScanFor = DetectionManager.getInstance().getDetectionImplementations();
+        List<Detection> detectionsToScanFor = DetectionManager.getInstance().getDetections();
 
         logger.info("Running detectors: {}", detectionsToScanFor.stream().map(Detection::getName).collect(Collectors.joining(", ")));
 
