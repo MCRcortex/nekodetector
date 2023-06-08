@@ -6,46 +6,47 @@ import me.cortex.jarscanner.detection.impl.FractureiserStage0c;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Wrapper of all known {@link Detection} implementations.
  */
-public class DetectionManager {
-	private static final DetectionManager instance = new DetectionManager();
-	private final List<Detection> detectionImplementations = new ArrayList<>();
+public final class DetectionManager {
+    private static final DetectionManager instance = new DetectionManager();
 
-	private DetectionManager() {
-		// deny construction
-	}
+    static {
+        instance.addDetection(new FractureiserStage0a());
+        instance.addDetection(new FractureiserStage0b());
+        instance.addDetection(new FractureiserStage0c());
+    }
 
-	/**
-	 * @param detectionImplementation
-	 * 		Detection implementation to register.
-	 */
-	public void addDetection(@Nonnull Detection detectionImplementation) {
-		detectionImplementations.add(detectionImplementation);
-	}
+    private final List<Detection> detections = new ArrayList<>();
 
-	/**
-	 * @return All known detection implementations.
-	 */
-	@Nonnull
-	public List<Detection> getDetectionImplementations() {
-		return detectionImplementations;
-	}
+    private DetectionManager() {
+        // deny construction
+    }
 
-	/**
-	 * @return Singleton instance of the manager.
-	 */
-	@Nonnull
-	public static DetectionManager getInstance() {
-		return instance;
-	}
+    /**
+     * @return Singleton instance of the manager.
+     */
+    @Nonnull
+    public static DetectionManager getInstance() {
+        return instance;
+    }
 
-	static {
-		instance.addDetection(new FractureiserStage0a());
-		instance.addDetection(new FractureiserStage0b());
-		instance.addDetection(new FractureiserStage0c());
-	}
+    /**
+     * @param detection Detection implementation to register.
+     */
+    public void addDetection(@Nonnull Detection detection) {
+        this.detections.add(detection);
+    }
+
+    /**
+     * @return All known detection implementations.
+     */
+    @Nonnull
+    public List<Detection> getDetections() {
+        return Collections.unmodifiableList(this.detections);
+    }
 }

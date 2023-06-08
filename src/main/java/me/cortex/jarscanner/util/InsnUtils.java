@@ -8,7 +8,10 @@ import org.objectweb.asm.tree.TypeInsnNode;
 /**
  * Various instruction utilities.
  */
-public class InsnUtils {
+public final class InsnUtils {
+	private InsnUtils() {
+	}
+
 	public static boolean same(AbstractInsnNode a, AbstractInsnNode b) {
 		if (a instanceof TypeInsnNode) {
 			TypeInsnNode aa = (TypeInsnNode) a;
