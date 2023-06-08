@@ -57,7 +57,7 @@ public class Gui {
                 return s;
             });
 
-            textArea.append("Done scanning!");
+            textArea.append("Scan Complete - " + Main.matches.get() + " matches found.");
         });
         panel2.add(runButton);
         panel2.add(credsButton);
