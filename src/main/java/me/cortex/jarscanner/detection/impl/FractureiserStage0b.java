@@ -1,6 +1,5 @@
 package me.cortex.jarscanner.detection.impl;
 
-import me.cortex.jarscanner.detection.Detection;
 import me.cortex.jarscanner.detection.DetectionItem;
 import me.cortex.jarscanner.detection.DetectionSink;
 import me.cortex.jarscanner.util.InsnUtils;
@@ -15,7 +14,7 @@ import static java.lang.reflect.Modifier.isStatic;
 /**
  * Detection for <a href="https://github.com/fractureiser-investigation/fractureiser/blob/main/docs/tech.md#stage-0-infected-mod-jars">Fractureiser stage 0.</a>
  */
-public class FractureiserStage0b extends AbstractDetection implements Detection {
+public class FractureiserStage0b extends AbstractDetection {
     // Method B, this is a hard detect, if it matches this it is 100% chance infected
     private static final AbstractInsnNode[] SIG = {
             new TypeInsnNode(Opcodes.NEW, "java/lang/String"),
@@ -65,8 +64,8 @@ public class FractureiserStage0b extends AbstractDetection implements Detection 
                         break;
                     }
                 }
-                if (sigOffset == SIG.length) {
-                    sink.addItem(new DetectionItem(jarPath, node.name, method.name + method.desc));
+                if (sigOffset >= SIG.length) {
+                    sink.addItem(det(jarPath, node, method));
                     return;
                 }
             }

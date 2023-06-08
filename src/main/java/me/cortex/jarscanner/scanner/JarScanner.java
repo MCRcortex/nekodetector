@@ -4,6 +4,7 @@ import me.coley.cafedude.classfile.ClassFile;
 import me.coley.cafedude.io.ClassFileReader;
 import me.coley.cafedude.io.ClassFileWriter;
 import me.coley.cafedude.transform.IllegalStrippingTransformer;
+import me.cortex.jarscanner.Main;
 import me.cortex.jarscanner.detection.Detection;
 import me.cortex.jarscanner.detection.DetectionProblem;
 import me.cortex.jarscanner.scanner.summary.JarScanSummary;
@@ -34,10 +35,10 @@ public class JarScanner implements Scanner<JarScanSummary> {
         this.detections = Collections.unmodifiableList(detections);
     }
 
-
+    @Nonnull
     @Override
-    public JarScanSummary runScan(Path jarPath) throws IOException {
-        JarScanSummary summary = new JarScanSummary();
+    public JarScanSummary runScan(@Nonnull Path jarPath) throws IOException {
+        JarScanSummary summary = new JarScanSummary(jarPath);
 
         // Parse the archive using mechanisms more in-line with how the JVM treats loading contents
         // when using -cp and -jar launch flags.

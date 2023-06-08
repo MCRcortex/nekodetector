@@ -3,6 +3,7 @@
 /build/
 /build/classes/java/main/
 /bin
+/logs
 /.idea/
 
 # macOS junk files
