@@ -1,4 +1,4 @@
-# Neko Dectector 
+# Neko Detector 
 
 > A tool to help detect if you are infected by the fractureiser malware.
 
@@ -7,7 +7,7 @@ The fractureiser malware once you run it, infects any jar it is able to find. Th
 ## Usage
 
 ```
-java -jar scanner.jar <# of threads> <path to scan> <optional: 'y' for failed jar file opening errors>
+java -jar scanner.jar <# of threads> <path to scan> <optional: 'true' for failed jar file opening errors>
 ```
 
 ## Example

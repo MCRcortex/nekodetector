@@ -8,55 +8,70 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.jar.JarFile;
 
 import static org.objectweb.asm.Opcodes.*;
 
+/**
+ * Detector class for Nekodetector, which scans for malicious code signatures from the Nekoclient malware.
+ * <p>ORIGINAL SOURCE: https://github.com/MCRcortex/nekodetector</p>
+ *
+ * @author MCRcortex (https://github.com/MCRcortex)
+ * @author Huskydog9988 (https://github.com/Huskydog9988)
+ */
 public class Detector {
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
-    public static void scan(JarFile file, Path path, Function<String, String> output) {
+    /**
+     * Scans for malicious code signatures in the specified {@link JarFile} located at the specified {@link Path}.
+     *
+     * @param file The {@link JarFile} to scan.
+     * @param path The {@link Path} of the {@link JarFile} to scan.
+     * @return {@code true} if a signature match was found, otherwise {@code false}.
+     */
+    public static boolean scan(JarFile file, Path path, Function<String, String> output) {
+        // Create boolean to store whether a signature match was found
+        boolean signatureMatchFound = false;
+
+        // Check Jar file for infection signatures
         try {
-            boolean matches = file.stream()
-                    .filter(entry -> entry.getName().endsWith(".class"))
+            // Scan .class files for signatures
+            signatureMatchFound = file.stream()
+                    .filter(entry -> entry.getName().endsWith(Constants.CLASS_FILE_EXTENSION))
                     .anyMatch(entry -> {
                         try {
                             return scanClass(getByteArray(file.getInputStream(entry)));
                         } catch (IOException e) {
-                            System.out.println("Failed to scan due to an IO error: " + entry.getName());
-                            System.out.println("Error:" + e.getMessage());
+                            output.apply("Failed to scan class in Jar file [" + path + "] due to an IO error: " + entry.getName());
+                            output.apply("Error:" + e.getMessage());
                             return false;
                         } catch (IllegalArgumentException e) {
-                            System.out.println("Failed to scan due to a class parsing error: " + entry.getName());
-                            System.out.println(
+                            output.apply("Failed to scan class in Jar file [" + path + "] due to a parsing error: " + entry.getName());
+                            output.apply(
                                     "This is likely due to a malformed class file or an issue with the JAR file itself.");
-                            System.out.println("Error:" + e.getMessage());
+                            output.apply("Error:" + e.getMessage());
 
                             return false;
                         }
                     });
-            if (!matches)
-                return;
-            Main.matches.addAndGet(1);
-            if (Gui.USING_GUI) {
-                output.apply("[!] Match Found At: " + path + "!");
-            } else {
-                output.apply(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
-            }
         } catch (Exception e) {
-            e.printStackTrace();
-            output.apply("Failed to scan: " + path);
+            output.apply("Failed to scan Jar file: " + path);
+            output.apply("Error:" + e.getMessage());
         } finally {
+            // Close Jar file
             try {
                 file.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                output.apply("Failed to close Jar file after scan: " + path);
+                output.apply("Error:" + e.getMessage());
             }
         }
+
+        // Return whether a signature match was found
+        return signatureMatchFound;
     }
 
     private static byte[] getByteArray(InputStream inputStream) throws IOException {
@@ -287,11 +302,14 @@ public class Detector {
     }
 
     /**
-     * Checks for signs of stage 2 infection
+     * Checks for signs of stage 2 infection and returns a list of files that are flagged as suspicious.
      * Based on:
      * https://github.com/fractureiser-investigation/fractureiser#am-i-infected
      */
-    public static void checkForStage2(Function<String, String> output) {
+    public static List<String> checkForStage2() {
+        // Create list to store suspicious files found
+        List<String> suspiciousFilesFound = new ArrayList<>();
+
         // windows checks
         Path windowsStartupDirectory = (Objects.isNull(System.getenv("APPDATA"))
                 ? Paths.get(System.getProperty("user.home"), "AppData", "Roaming")
@@ -312,7 +330,7 @@ public class Detector {
             // only checking for the folder because the file can be renamed
             File edgeFolder = new File(System.getenv("APPDATA") + "\\Microsoft Edge");
             if (edgeFolder.exists()) {
-                output.apply("Matches: Stage 2 infection detected at " + edgeFolder.getAbsolutePath());
+                suspiciousFilesFound.add(edgeFolder.getAbsolutePath());
             }
 
             File startFolder = new File("Microsoft\\Windows\\Start Menu\\Programs\\Startup");
@@ -324,8 +342,7 @@ public class Detector {
 
                     for (int j = 0; j < maliciousFiles.length; j++) {
                         if (startFiles[i].getName().equals(maliciousFiles[j])) {
-                            output.apply(
-                                    "Matches: Stage 2 infection detected at " + startFiles[i].getAbsolutePath());
+                            suspiciousFilesFound.add(startFiles[i].getAbsolutePath());
                         }
                     }
                 }
@@ -336,8 +353,11 @@ public class Detector {
         if (System.getProperty("os.name").toLowerCase().contains("linux")) {
             File file = new File("~/.config/.data/lib.jar");
             if (file.exists()) {
-                System.out.println("Matches: Stage 2 infection detected at " + file.getAbsolutePath());
+                suspiciousFilesFound.add(file.getAbsolutePath());
             }
         }
+
+        // Return list of suspicious files found
+        return suspiciousFilesFound;
     }
 }
