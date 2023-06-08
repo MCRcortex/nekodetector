@@ -1,9 +1,11 @@
 package me.cortex.jarscanner;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Function;
@@ -17,11 +19,34 @@ public class Gui {
     private static Thread scanThread;
 
     public static void main(String[] args) {
-        createAndDisplayGui();
+        boolean darkTheme = true;
+        for (String arg : args) {
+            if ("--lightTheme".equals(arg)) {
+                darkTheme = false;
+                break;
+            }
+        }
+
+        createAndDisplayGui(darkTheme);
     }
 
-    private static void createAndDisplayGui() {
+    private static void setToDarkTheme() {
+        try {
+            UIManager.put("swing.boldMetal", Boolean.FALSE);
+            UIManager.put("creditsBackground", new ColorUIResource(0x3c3f41));
+            MetalLookAndFeel.setCurrentTheme(new DarkTheme());
+            // Force metal look and feel
+            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+        } catch (Throwable e) {
+            System.err.println("Unsupported dark theme look and feel");
+        }
+    }
+
+    private static void createAndDisplayGui(boolean darkTheme) {
         USING_GUI = true;
+        if (darkTheme) {
+            setToDarkTheme();
+        }
         textArea = new JTextArea(20, 40);
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -182,6 +207,10 @@ public class Gui {
         JFrame frame = new JFrame("Credits");
         JTextArea credits = new JTextArea();
         credits.setEditable(false);
+        Color creditsBackground = UIManager.getColor("creditsBackground");
+        if (creditsBackground != null) {
+            credits.setBackground(creditsBackground);
+        }
         for (String string : Gui.credits) {
             credits.append(string + "\n");
         }
@@ -197,5 +226,61 @@ public class Gui {
         textArea.setEditable(false);
 
         return scrollPane;
+    }
+
+    private static class DarkTheme extends DefaultMetalTheme {
+        private static final ColorUIResource PRIMARY_1 = new ColorUIResource(0x808080);
+        private static final ColorUIResource PRIMARY_2 = new ColorUIResource(0x606060);
+        private static final ColorUIResource PRIMARY_3 = new ColorUIResource(0x4d4d4d);
+        private static final ColorUIResource SECONDARY_1 = new ColorUIResource(102, 102, 102);
+        private static final ColorUIResource SECONDARY_2 = new ColorUIResource(85, 85, 85);
+        private static final ColorUIResource SECONDARY_3 = new ColorUIResource(0x3c3f41);
+        private static final ColorUIResource WHITE = new ColorUIResource(0x2b2b2b);
+        private static final ColorUIResource BLACK = new ColorUIResource(255, 255, 255);
+
+        @Override
+        public String getName() {
+            return "Dark theme";
+        }
+
+        @Override
+        protected ColorUIResource getPrimary1() {
+            return PRIMARY_1;
+        }
+
+        @Override
+        protected ColorUIResource getPrimary2() {
+            return PRIMARY_2;
+        }
+
+        @Override
+        protected ColorUIResource getPrimary3() {
+            return PRIMARY_3;
+        }
+
+        @Override
+        public ColorUIResource getSecondary1() {
+            return SECONDARY_1;
+        }
+
+        @Override
+        public ColorUIResource getSecondary2() {
+            return SECONDARY_2;
+        }
+
+        @Override
+        public ColorUIResource getSecondary3() {
+            return SECONDARY_3;
+        }
+
+        @Override
+        protected ColorUIResource getWhite() {
+            return WHITE;
+        }
+
+        @Override
+        protected ColorUIResource getBlack() {
+            return BLACK;
+        }
     }
 }
