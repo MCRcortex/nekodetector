@@ -71,7 +71,8 @@ public class Gui {
                 // Run scan
                 try {
                     Main.run(4, searchDir, true, out -> {
-                        textArea.append(out + "\n");
+                        String processedOut = out.replace(Constants.ANSI_RED, "").replace(Constants.ANSI_GREEN, "").replace(Constants.ANSI_WHITE, "").replace(Constants.ANSI_RESET, "");
+                        textArea.append(processedOut + "\n");
                         // Scroll to bottom of text area if auto-scroll is enabled
                         if (autoScrollCheckBox.isSelected()) {
                             textArea.setCaretPosition(textArea.getDocument().getLength());
