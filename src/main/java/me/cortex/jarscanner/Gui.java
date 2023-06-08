@@ -108,6 +108,7 @@ public class Gui {
         frame.getContentPane().add(panel2, BorderLayout.CENTER);
         frame.getContentPane().add(panel3, BorderLayout.SOUTH);
         frame.pack();
+        frame.setTitle("Neko Detector");
         frame.setLocationByPlatform(true);
         frame.setVisible(true);
         frame.setMinimumSize(new Dimension(600, 300));
