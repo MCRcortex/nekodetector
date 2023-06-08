@@ -22,9 +22,6 @@ public class Gui {
     private static void createAndDisplayGui() {
         USING_GUI = true;
         textArea = new JTextArea(20, 40);
-        JPanel panel = new JPanel();
-        JPanel panel2 = new JPanel();
-        JPanel panel3 = new JPanel();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel searchDirPickerLabel = new JLabel("Select Search Directory:");
@@ -97,16 +94,60 @@ public class Gui {
             });
             scanThread.start();
         });
-        panel2.add(runButton);
-        panel2.add(cancelButton);
-        panel2.add(credsButton);
-        panel.add(searchDirPickerLabel);
-        panel.add(searchDirPicker);
-        panel3.add(autoScrollCheckBox);
-        panel3.add(createTextArea());
-        frame.getContentPane().add(panel, BorderLayout.NORTH);
-        frame.getContentPane().add(panel2, BorderLayout.CENTER);
-        frame.getContentPane().add(panel3, BorderLayout.SOUTH);
+
+        // Create grid bag layout
+        frame.getContentPane().setLayout(new GridBagLayout());
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+
+        // Create button panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(runButton, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(cancelButton, gridBagConstraints);
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(credsButton, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        buttonPanel.add(autoScrollCheckBox, gridBagConstraints);
+
+        // Add button panel to top right of frame
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new Insets(10, 10, 10, 10);
+        gridBagConstraints.anchor = GridBagConstraints.NORTHEAST;
+        frame.getContentPane().add(buttonPanel, gridBagConstraints);
+
+        // Create panel for search dir picker
+        JPanel searchDirPickerPanel = new JPanel();
+        searchDirPickerPanel.add(searchDirPickerLabel);
+        searchDirPickerPanel.add(searchDirPicker);
+
+        // Add search dir picker panel to top left of frame
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new Insets(10, 10, 10, 10);
+        gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+        frame.getContentPane().add(searchDirPickerPanel, gridBagConstraints);
+
+        // Create panel for log area
+        JScrollPane logAreaPanel = createTextArea();
+
+        // Add log area panel to bottom of frame
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.weightx = 1;
+        gridBagConstraints.weighty = 1;
+        gridBagConstraints.insets = new Insets(10, 10, 10, 10);
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        frame.getContentPane().add(logAreaPanel, gridBagConstraints);
+
+        // Pack and display frame
         frame.pack();
         frame.setTitle("Neko Detector");
         frame.setLocationByPlatform(true);
