@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.function.Function;
 
 public class Gui {
     public static boolean USING_GUI;
@@ -70,7 +71,8 @@ public class Gui {
 
                 // Run scan
                 try {
-                    Main.run(4, searchDir, true, out -> {
+                    // Create log output function
+                    Function<String, String> logOutput = out -> {
                         String processedOut = out.replace(Constants.ANSI_RED, "").replace(Constants.ANSI_GREEN, "").replace(Constants.ANSI_WHITE, "").replace(Constants.ANSI_RESET, "");
                         textArea.append(processedOut + "\n");
                         // Scroll to bottom of text area if auto-scroll is enabled
@@ -78,7 +80,10 @@ public class Gui {
                             textArea.setCaretPosition(textArea.getDocument().getLength());
                         }
                         return out;
-                    });
+                    };
+
+                    Results run = Main.run(4, searchDir, true, logOutput);
+                    Main.outputRunResults(run, logOutput);
                     textArea.append("Done scanning!");
                 } catch (Exception ex) {
                     if (ex instanceof InterruptedException || ex instanceof RejectedExecutionException) {
