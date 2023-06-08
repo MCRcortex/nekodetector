@@ -1,37 +1,38 @@
 plugins {
-    id "java"
-    id("com.github.johnrengelman.shadow") version "8.1.1"    
+    id 'java'
+    id 'gov.tak.gradle.plugins.checker-processor' version '1.2.7' // for nullability enforcement
+    id('com.github.johnrengelman.shadow') version '8.1.1'
 }
+
 group 'me.cortex'
-version '1.0-SNAPSHOT'
+version '2.0.0-SNAPSHOT'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' } // for cafedude
 }
 
 dependencies {
     implementation 'org.ow2.asm:asm:9.5'
     implementation 'org.ow2.asm:asm-tree:9.5'
+    implementation 'com.github.Col-E:CAFED00D:1.10.2'
+    implementation 'software.coley:lljzip:1.3.0'
+    implementation 'info.picocli:picocli:4.7.4'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'ch.qos.logback:logback-classic:1.4.7'
 }
 
 test {
     useJUnitPlatform()
 }
 
-
 tasks.shadowJar {
     archiveClassifier.set("")
     manifest {
-        attributes "Main-Class": "me.cortex.jarscanner.Main"
-    }
-}
-tasks.build {
-    dependsOn(shadowJar)
-    if (project.hasProperty("overrideVersion")) {
-        project.setVersion(overrideVersion)
-        println "Overrided project version to: " + version
+        attributes 'Main-Class': 'me.cortex.jarscanner.Main'
     }
 }
 
