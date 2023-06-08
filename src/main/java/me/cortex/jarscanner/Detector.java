@@ -39,11 +39,6 @@ public class Detector {
                             return false;
                         }
                     });
-            try {
-                file.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             if (!matches)
                 return;
             Main.matches.addAndGet(1);
@@ -55,6 +50,12 @@ public class Detector {
         } catch (Exception e) {
             e.printStackTrace();
             output.apply("Failed to scan: " + path);
+        } finally {
+            try {
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
