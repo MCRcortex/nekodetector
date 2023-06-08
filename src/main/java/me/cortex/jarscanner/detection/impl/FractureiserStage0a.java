@@ -20,7 +20,7 @@ import static java.lang.reflect.Modifier.isStatic;
  */
 public class FractureiserStage0a extends AbstractDetection implements Detection, Opcodes {
     // Method A, this is a near hard detect, if it matches this it is 95% chance infected
-    private static final AbstractInsnNode[] SIG = new AbstractInsnNode[]{
+    private static final AbstractInsnNode[] SIG = {
             new MethodInsnNode(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;"),
             new MethodInsnNode(INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;"),
             new MethodInsnNode(INVOKEVIRTUAL, "java/lang/String", "INVOKEVIRTUAL",
@@ -32,7 +32,7 @@ public class FractureiserStage0a extends AbstractDetection implements Detection,
     };
 
     public FractureiserStage0a() {
-        super("Fractureiser Stage 0-a");
+        super("Fractureiser Stage 0 Variant A");
     }
 
     @Override

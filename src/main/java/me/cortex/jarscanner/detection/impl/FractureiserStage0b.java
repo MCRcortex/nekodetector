@@ -17,7 +17,7 @@ import static java.lang.reflect.Modifier.isStatic;
  */
 public class FractureiserStage0b extends AbstractDetection implements Detection, Opcodes {
     // Method B, this is a hard detect, if it matches this it is 100% chance infected
-    private static final AbstractInsnNode[] SIG = new AbstractInsnNode[]{
+    private static final AbstractInsnNode[] SIG = {
             new TypeInsnNode(NEW, "java/lang/String"),
             new MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V"),
             new TypeInsnNode(NEW, "java/lang/String"),
@@ -42,7 +42,7 @@ public class FractureiserStage0b extends AbstractDetection implements Detection,
     };
 
     public FractureiserStage0b() {
-        super("Fractureiser Stage 0-b");
+        super("Fractureiser Stage 0 Variant B");
     }
 
     @Override

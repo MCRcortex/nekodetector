@@ -17,7 +17,7 @@ import static java.lang.reflect.Modifier.isStatic;
 public class FractureiserStage0c extends AbstractDetection implements Detection, Opcodes {
     // Method c, this is a hard detect, if it matches this it is 100% chance infected
     // Looks for a byte array with the IP. This is a likely match.
-    private static final AbstractInsnNode[] SIG = new AbstractInsnNode[]{
+    private static final AbstractInsnNode[] SIG = {
             new IntInsnNode(BIPUSH, 56),
             new InsnNode(BASTORE),
             new InsnNode(DUP),
@@ -74,7 +74,7 @@ public class FractureiserStage0c extends AbstractDetection implements Detection,
     };
 
     public FractureiserStage0c() {
-        super("Fractureiser Stage 0-c");
+        super("Fractureiser Stage 0 Variant C");
     }
 
     @Override
