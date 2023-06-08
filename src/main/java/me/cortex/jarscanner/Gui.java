@@ -49,6 +49,10 @@ public class Gui {
             showCredits();
         });
 
+        // Auto scroll checkbox
+        JCheckBox autoScrollCheckBox = new JCheckBox("Auto-scroll");
+        autoScrollCheckBox.setSelected(true);
+
         // Cancel button
         JButton cancelButton = new JButton("Cancel!");
         cancelButton.setEnabled(false);
@@ -72,6 +76,10 @@ public class Gui {
                 try {
                     Main.run(4, searchDir, true, out -> {
                         textArea.append(out + "\n");
+                        // Scroll to bottom of text area if auto-scroll is enabled
+                        if (autoScrollCheckBox.isSelected()) {
+                            textArea.setCaretPosition(textArea.getDocument().getLength());
+                        }
                         return out;
                     });
                     textArea.append("Done scanning!");
@@ -95,6 +103,7 @@ public class Gui {
         panel2.add(credsButton);
         panel.add(searchDirPickerLabel);
         panel.add(searchDirPicker);
+        panel3.add(autoScrollCheckBox);
         panel3.add(createTextArea());
         frame.getContentPane().add(panel, BorderLayout.NORTH);
         frame.getContentPane().add(panel2, BorderLayout.CENTER);
