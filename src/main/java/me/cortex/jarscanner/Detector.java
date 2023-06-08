@@ -186,7 +186,8 @@ public class Detector {
         }
         if (a instanceof MethodInsnNode) {
             MethodInsnNode aa = (MethodInsnNode) a;
-            return aa.owner.equals(((MethodInsnNode) b).owner) && aa.desc.equals(((MethodInsnNode) b).desc)
+            return aa.owner.equals(((MethodInsnNode) b).owner)
+                    && aa.name.equals(((MethodInsnNode) b).name)
                     && aa.desc.equals(((MethodInsnNode) b).desc);
         }
         if (a instanceof InsnNode) {
