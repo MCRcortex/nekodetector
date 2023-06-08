@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.internal.JavaJarExec
+
 plugins {
     java
     application
@@ -14,10 +16,6 @@ version = "2.0.0-SNAPSHOT"
 
 java {
     withSourcesJar()
-
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
 }
 
 repositories {
@@ -52,6 +50,10 @@ tasks {
         options {
             encoding = "UTF-8"
         }
+    }
+
+    named<JavaJarExec>("runShadow") {
+        args = listOf(jarFile.path)
     }
 
     withType<Jar>().configureEach {
