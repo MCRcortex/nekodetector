@@ -6,15 +6,17 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class Gui {
+    public static boolean USING_GUI;
     private static JTextArea textArea;
     private static JButton searchDirPicker;
-    private static Path searchDir = Path.of(System.getProperty("user.home"));
+    private static Path searchDir = new File(System.getProperty("user.home")).toPath();
 
     public static void main(String[] args) {
         createAndDisplayGui();
     }
 
     private static void createAndDisplayGui() {
+        USING_GUI = true;
         textArea = new JTextArea(20, 40);
         JPanel panel = new JPanel();
         JPanel panel2 = new JPanel();
@@ -25,7 +27,7 @@ public class Gui {
         JLabel searchDirPickerLabel = new JLabel("Select Search Directory:");
         searchDirPickerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        searchDirPicker = new JButton(Path.of(System.getProperty("user.home")).toFile().getName());
+        searchDirPicker = new JButton(new File(System.getProperty("user.home")).getName());
         searchDirPicker.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
