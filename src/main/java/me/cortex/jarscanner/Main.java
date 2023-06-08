@@ -263,6 +263,15 @@ public class Main {
     }
 
     /**
+     * Cancels the current scan, if one is running, by shutting down the executor service.
+     */
+    public static void cancelScanIfRunning() {
+        if (executorService != null) {
+            executorService.shutdownNow();
+        }
+    }
+
+    /**
      * Checks the arguments passed to the program for validity.
      *
      * @param args the arguments passed to the program main method

@@ -5,12 +5,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.RejectedExecutionException;
 
 public class Gui {
     public static boolean USING_GUI;
     private static JTextArea textArea;
     private static JButton searchDirPicker;
     private static Path searchDir = new File(System.getProperty("user.home")).toPath();
+
+    private static Thread scanThread;
 
     public static void main(String[] args) {
         createAndDisplayGui();
@@ -46,26 +49,49 @@ public class Gui {
             showCredits();
         });
 
+        // Cancel button
+        JButton cancelButton = new JButton("Cancel!");
+        cancelButton.setEnabled(false);
+        cancelButton.addActionListener(e -> {
+            if (scanThread != null) {
+                Main.cancelScanIfRunning();
+                scanThread.interrupt();
+            }
+        });
+
+        // Run button
         JButton runButton = new JButton("Run!");
         runButton.addActionListener(e -> {
-            new Thread(() -> {
+            scanThread = new Thread(() -> {
+                // Disable buttons (enable cancel)
                 searchDirPicker.setEnabled(false);
                 runButton.setEnabled(false);
+                cancelButton.setEnabled(true);
+
+                // Run scan
                 try {
                     Main.run(4, searchDir, true, out -> {
                         textArea.append(out + "\n");
                         return out;
                     });
+                    textArea.append("Done scanning!");
                 } catch (Exception ex) {
-                    textArea.append("Error while running scan!" + "\n");
+                    if (ex instanceof InterruptedException || ex instanceof RejectedExecutionException) {
+                        textArea.append("Scan cancelled!" + "\n");
+                    } else {
+                        textArea.append("Error while running scan!" + "\n");
+                    }
                 }
 
-                textArea.append("Done scanning!");
+                // Re-enable buttons (disable cancel)
                 searchDirPicker.setEnabled(true);
                 runButton.setEnabled(true);
-            }).start();
+                cancelButton.setEnabled(false);
+            });
+            scanThread.start();
         });
         panel2.add(runButton);
+        panel2.add(cancelButton);
         panel2.add(credsButton);
         panel.add(searchDirPickerLabel);
         panel.add(searchDirPicker);
