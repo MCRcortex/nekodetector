@@ -25,7 +25,6 @@ public class Gui {
         JPanel panel = new JPanel();
         JPanel panel2 = new JPanel();
         JPanel panel3 = new JPanel();
-        JPanel credsPanel = new JPanel();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel searchDirPickerLabel = new JLabel("Select Search Directory:");
