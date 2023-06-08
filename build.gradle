@@ -11,6 +11,13 @@ repositories {
     mavenCentral()
 }
 
+// Reproducible builds
+// https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
 dependencies {
     implementation 'org.ow2.asm:asm:9.5'
     implementation 'org.ow2.asm:asm-tree:9.5'
