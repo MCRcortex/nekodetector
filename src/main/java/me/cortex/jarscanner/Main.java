@@ -99,7 +99,7 @@ public class Main {
         }
 
         System.out.println(
-                ANSI_GREEN + "Scan Complete - " + Main.matches + " matches found. - " + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
+                ANSI_GREEN + "Scan Complete - " + ANSI_RESET + Main.matches + " matches found. - " + ANSI_RESET + " took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     /**
