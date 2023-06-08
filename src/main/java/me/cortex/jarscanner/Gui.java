@@ -1,6 +1,8 @@
 package me.cortex.jarscanner;
 
 import me.cortex.jarscanner.detection.DetectionManager;
+import me.cortex.jarscanner.scanner.RootScanner;
+import me.cortex.jarscanner.scanner.summary.RootScanSummary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,10 +10,6 @@ import java.io.File;
 import java.nio.file.Path;
 
 public final class Gui {
-    public static boolean USING_GUI;
-    private static JTextArea textArea;
-    private static JButton searchDirPicker;
-    private static Path searchDir = new File(System.getProperty("user.home")).toPath();
     private static final String[] credits = {
             "Credits to:",
             "Cortex, for decompiling and deobfuscating the malware, and making the initial detector.",
@@ -25,6 +23,10 @@ public final class Gui {
             "Vazkii: they're pretty neat",
             "Elocin: Originally finding the malware itself"
     };
+    public static boolean USING_GUI;
+    private static JTextArea textArea;
+    private static JButton searchDirPicker;
+    private static Path searchDir = new File(System.getProperty("user.home")).toPath();
 
     private Gui() {
     }
@@ -70,11 +72,12 @@ public final class Gui {
 
             // TODO: Improve handling here with the new scan system
             try {
-                RootScanner scanner = new RootScanner(searchDir,
+                RootScanner scanner = new RootScanner(
                         Runtime.getRuntime().availableProcessors() - 1,
                         Integer.MAX_VALUE,
-                        DetectionManager.getInstance().getDetections());
-                RootScanSummary summary = scanner.run();
+                        DetectionManager.getInstance().getDetections()
+                );
+                RootScanSummary summary = scanner.runScan(searchDir);
                 textArea.append(summary.toString());
             } catch (Exception ex) {
                 textArea.append("Oof");
