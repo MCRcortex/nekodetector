@@ -45,5 +45,4 @@ jobs:
           name: Neko Detector ${{ env.VERSION }}
           draft: true
           prerelease: false
-          files: |
-            jarscanner-${{ env.VERSION }}.jar
+          files: build/libs/*
