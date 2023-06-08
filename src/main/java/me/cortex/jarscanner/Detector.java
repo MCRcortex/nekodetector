@@ -3,8 +3,7 @@ package me.cortex.jarscanner;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -26,7 +25,7 @@ public class Detector {
                     .filter(entry -> entry.getName().endsWith(".class"))
                     .anyMatch(entry -> {
                         try {
-                            return scanClass(file.getInputStream(entry).readAllBytes());
+                            return scanClass(getByteArray(file.getInputStream(entry)));
                         } catch (IOException e) {
                             System.out.println("Failed to scan due to an IO error: " + entry.getName());
                             System.out.println("Error:" + e.getMessage());
@@ -48,11 +47,28 @@ public class Detector {
             if (!matches)
                 return;
             Main.matches++;
-            output.apply(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
+            if (Gui.USING_GUI) {
+                output.apply("[!] Match Found At: " + path + "!");
+            } else {
+                output.apply(ANSI_RED + "[!] Match Found At: " + ANSI_WHITE + path + ANSI_RESET);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             output.apply("Failed to scan: " + path);
         }
+    }
+
+    private static byte[] getByteArray(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int nRead;
+        byte[] data = new byte[16384];
+
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+
+        return buffer.toByteArray();
     }
 
     private static final AbstractInsnNode[] SIG1 = new AbstractInsnNode[] {

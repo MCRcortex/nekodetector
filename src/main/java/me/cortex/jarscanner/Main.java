@@ -63,7 +63,7 @@ public class Main {
                     if (!file.toString().endsWith(".jar")) {
                         return FileVisitResult.CONTINUE;
                     }
-                    System.out.println("Looking at file " + file);
+                    //System.out.println("Looking at file " + file);
                     JarFile jf;
                     try {
                         jf = new JarFile(file.toFile());
