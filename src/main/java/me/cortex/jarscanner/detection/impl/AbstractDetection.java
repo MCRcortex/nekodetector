@@ -2,6 +2,7 @@ package me.cortex.jarscanner.detection.impl;
 
 import me.cortex.jarscanner.detection.Detection;
 import me.cortex.jarscanner.detection.DetectionItem;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -11,7 +12,7 @@ import java.nio.file.Path;
 /**
  * Base for detections.
  */
-public abstract class AbstractDetection implements Detection {
+public abstract class AbstractDetection implements Detection, Opcodes {
 	private final String name;
 
 	/**

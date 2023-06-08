@@ -1,9 +1,7 @@
 package me.cortex.jarscanner.detection.impl;
 
-import me.cortex.jarscanner.detection.DetectionItem;
 import me.cortex.jarscanner.detection.DetectionSink;
 import me.cortex.jarscanner.util.InsnUtils;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -20,14 +18,14 @@ import static java.lang.reflect.Modifier.isStatic;
 public class FractureiserStage0a extends AbstractDetection {
     // Method A, this is a near hard detect, if it matches this it is 95% chance infected
     private static final AbstractInsnNode[] SIG = {
-            new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;"),
-            new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;"),
-            new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/String", "INVOKEVIRTUAL",
+            new MethodInsnNode(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;"),
+            new MethodInsnNode(INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;"),
+            new MethodInsnNode(INVOKEVIRTUAL, "java/lang/String", "concat",
                     "(Ljava/lang/String;)Ljava/lang/String;"), // TODO:FIXME: this might not be in all of them
-            new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B"),
-            new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/String", "<init>", "([B)V"),
-            new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/io/File", "getPath", "()Ljava/lang/String;"),
-            new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Runtime", "exec", "([Ljava/lang/String;)Ljava/lang/Process;"),
+            new MethodInsnNode(INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B"),
+            new MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V"),
+            new MethodInsnNode(INVOKEVIRTUAL, "java/io/File", "getPath", "()Ljava/lang/String;"),
+            new MethodInsnNode(INVOKEVIRTUAL, "java/lang/Runtime", "exec", "([Ljava/lang/String;)Ljava/lang/Process;"),
     };
 
     public FractureiserStage0a() {
