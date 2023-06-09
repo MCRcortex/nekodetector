@@ -303,59 +303,82 @@ public class Detector {
     }
 
     /**
-     * Checks for signs of stage 2 infection and returns a list of files that are flagged as suspicious.
+     * Checks for signs of stage 2 infection and returns a list of files that are
+     * flagged as suspicious.
      * Based on:
      * https://github.com/fractureiser-investigation/fractureiser#am-i-infected
+     * https://prismlauncher.org/news/cf-compromised-alert/#automated-script
      */
-    public static List<String> checkForStage2() {
+    public static List<String> checkForStage2(Function<String, String> output) {
         // Create list to store suspicious files found
         List<String> suspiciousFilesFound = new ArrayList<>();
 
-        // windows checks
-        Path windowsStartupDirectory = (Objects.isNull(System.getenv("APPDATA"))
-                ? Paths.get(System.getProperty("user.home"), "AppData", "Roaming")
-                : Paths.get(System.getenv("APPDATA"), new String[0]))
-                .resolve(Paths.get("Microsoft", "Windows", "Start Menu", "Programs", "Startup"));
-        boolean windows = Files.isDirectory(windowsStartupDirectory, new LinkOption[0])
-                && Files.isWritable(windowsStartupDirectory);
+        Path userHome = Paths.get(System.getProperty("user.home"));
 
-        String[] maliciousFiles = {
-                ".ref",
-                "client.jar",
-                "lib.dll",
-                "libWebGL64.jar",
-                "run.bat"
-        };
+        String os = System.getProperty("os.name").toLowerCase();
+        boolean windows = os.contains("windows");
+
+        File dataFolder;
 
         if (windows) {
-            // only checking for the folder because the file can be renamed
-            File edgeFolder = new File(System.getenv("APPDATA") + "\\Microsoft Edge");
-            if (edgeFolder.exists()) {
-                suspiciousFilesFound.add(edgeFolder.getAbsolutePath());
-            }
+            Path windowsAppData = Paths.get(userHome.toString(), "AppData");
+            dataFolder = Paths.get(windowsAppData.toString(), "Local", "Microsoft Edge").toFile();
 
-            File startFolder = new File("Microsoft\\Windows\\Start Menu\\Programs\\Startup");
-            // get all files in the startup folder, and check if they match the malicious
+            Path windowsStartupDirectory = Paths.get(windowsAppData.toString(), "Roaming", "Microsoft", "Windows",
+                    "Start Menu", "Programs", "Startup");
+
+            File startFolder = windowsStartupDirectory.toFile();
+            // check for run.bat (or a shortcut to it)
             if (startFolder.exists() && startFolder.isDirectory()) {
                 File[] startFiles = startFolder.listFiles();
 
-                for (int i = 0; i < startFiles.length; i++) {
-
-                    for (int j = 0; j < maliciousFiles.length; j++) {
-                        if (startFiles[i].getName().equals(maliciousFiles[j])) {
-                            suspiciousFilesFound.add(startFiles[i].getAbsolutePath());
-                        }
+                for (File startFile : startFiles) {
+                    if (startFile.getName().contains("run.bat")) {
+                        suspiciousFilesFound.add(startFile.getAbsolutePath());
                     }
                 }
             }
+
+            // check for known registry key used to start run.bat
+            String err = "Couldn't run reg.exe! Please check HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\t manually";
+            String regKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\t";
+            try {
+                Process regQuery = Runtime.getRuntime()
+                        .exec("reg.exe query " + regKey);
+                regQuery.waitFor();
+
+                int returnCode = regQuery.exitValue();
+                if (returnCode == 0) {
+                    suspiciousFilesFound.add(regKey);
+                }
+            } catch (IOException e) {
+                output.apply(err);
+            } catch (InterruptedException e) {
+                output.apply(err);
+            }
+
         }
 
-        // linux checks
-        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
-            File file = new File("~/.config/.data/lib.jar");
-            if (file.exists()) {
-                suspiciousFilesFound.add(file.getAbsolutePath());
+        // we are going to assume linux here, as it's the only other platform affected
+        else {
+            Path linuxConfig = Paths.get(userHome.toString(), ".config");
+            dataFolder = Paths.get(linuxConfig.toString(), ".data").toFile();
+
+            // check for malicious systemd services
+            String maliciousService = "systemd-utility.service";
+            File[] systemdFolders = new File[]{ Paths.get(linuxConfig.toString(), "systemd", "user").toFile(), Paths.get("/etc", "systemd", "system").toFile() };
+
+            for (File folder : systemdFolders) {
+              File service = Paths.get(folder.toString(), maliciousService).toFile();
+              if (service.exists()) {
+                suspiciousFilesFound.add(service.getAbsolutePath());
+              }
             }
+        }
+
+        // only checking for the folder because the file can be renamed
+        if (dataFolder.exists() && dataFolder.isDirectory()) {
+            suspiciousFilesFound.add(dataFolder.getAbsolutePath());
         }
 
         // Return list of suspicious files found
