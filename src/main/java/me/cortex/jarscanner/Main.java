@@ -246,7 +246,7 @@ public class Main {
         // Run stage 2 scan
         long stage2StartTime = System.currentTimeMillis();
         logOutput.apply(Constants.ANSI_GREEN + "Running Stage 2 Scan..." + Constants.ANSI_RESET);
-        List<String> stage2InfectionsList = Detector.checkForStage2();
+        List<String> stage2InfectionsList = Detector.checkForStage2(logOutput);
         long stage2EndTime = System.currentTimeMillis();
         long stage2Time = stage2EndTime - stage2StartTime;
         logOutput.apply(Constants.ANSI_GREEN + "Stage 2 Scan Complete - " + Constants.ANSI_RESET + "Took  " + stage2Time + "ms.");
