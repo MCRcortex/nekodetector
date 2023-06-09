@@ -48,7 +48,8 @@ public class Skyragea extends AbstractDetection {
                 // Check if opcode matches sig opcode, and insn operands match
                 if (insn.getOpcode() == SIG[sigOffset].getOpcode() &&
                         !InsnUtils.same(insn, SIG[sigOffset++])) {
-                    break;
+                    sigOffset = 0;
+                    continue;
                 }
             }
             if (sigOffset >= SIG.length) {

@@ -59,11 +59,12 @@ public class Skyrageb extends AbstractDetection {
                 if (insn.getOpcode() == -1)
                     continue;
 
-                // don't really get why we break here
                 // Check if opcode matches sig opcode, and insn operands match
+                //
                 if (insn.getOpcode() == SIG[sigOffset].getOpcode() &&
                         !InsnUtils.same(insn, SIG[sigOffset++])) {
-                    break;
+                    sigOffset = 0;
+                    continue;
                 }
             }
 
