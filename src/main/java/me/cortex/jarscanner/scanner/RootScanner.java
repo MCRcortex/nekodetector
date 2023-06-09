@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import software.coley.llzip.format.ZipPatterns;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,20 +91,36 @@ public class RootScanner implements Scanner<RootScanSummary> {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-            // Submit all jar files to the thread pool
             String pathNameInsensitive = file.toString().toLowerCase();
-            if (pathNameInsensitive.endsWith(".jar") || isZip(file)) {
-                CompletableFuture.supplyAsync((UncheckedSupplier<JarScanSummary>) () -> scanner.runScan(file), this.scanPool)
-                        .whenComplete((jarScan, exception) -> {
-                            if (jarScan != null) {
-                                logger.info("Completed scan for jar: {} - [Detections={}, Problems={}]",
-                                        file, jarScan.getItems().size(), jarScan.getProblems().size());
-                              this.jarScans.add(jarScan);
-                            } else if (exception != null) {
-                                logger.warn("Error scanning jar: {}", file, exception);
-                            }
-                        });
+
+            // if the file isn't a jar or zip skip it
+            if (!pathNameInsensitive.endsWith(".jar") || !isZip(file)) {
+                return FileVisitResult.CONTINUE;
             }
+
+            // check if the file is too big
+            try {
+                if (!Files.isDirectory(file) && Files.size(file) >= 2e+9) {
+                    logger.warn("Jar is too large to scan (>2gb): {}", file);
+                    return FileVisitResult.CONTINUE;
+                }
+            } catch (IOException e) {
+                logger.error("Failed to get file size for jar: {}", file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            // Submit all jar files to the thread pool
+            CompletableFuture.supplyAsync((UncheckedSupplier<JarScanSummary>) () -> scanner.runScan(file), this.scanPool)
+                    .whenComplete((jarScan, exception) -> {
+                        if (jarScan != null) {
+                            logger.info("Completed scan for jar: {} - [Detections={}, Problems={}]",
+                                    file, jarScan.getItems().size(), jarScan.getProblems().size());
+                          this.jarScans.add(jarScan);
+                        } else if (exception != null) {
+                            logger.warn("Error scanning jar: {}", file, exception);
+                        }
+                    });
+
             return FileVisitResult.CONTINUE;
         }
 
