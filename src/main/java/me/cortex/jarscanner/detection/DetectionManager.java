@@ -1,8 +1,6 @@
 package me.cortex.jarscanner.detection;
 
-import me.cortex.jarscanner.detection.impl.FractureiserStage0a;
-import me.cortex.jarscanner.detection.impl.FractureiserStage0b;
-import me.cortex.jarscanner.detection.impl.FractureiserStage0c;
+import me.cortex.jarscanner.detection.impl.*;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -20,6 +18,8 @@ public final class DetectionManager {
         instance.addDetection(new FractureiserStage0a());
         instance.addDetection(new FractureiserStage0b());
         instance.addDetection(new FractureiserStage0c());
+        instance.addDetection(new Skyragea());
+        instance.addDetection(new Skyrageb());
     }
 
     private DetectionManager() {
