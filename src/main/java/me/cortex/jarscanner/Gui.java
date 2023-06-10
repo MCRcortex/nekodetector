@@ -84,7 +84,7 @@ public class Gui {
 
                     Results run = Main.run(4, searchDir, true, logOutput);
                     Main.outputRunResults(run, logOutput);
-                    textArea.append("Done scanning!");
+                    textArea.append("Done scanning!" + "\n");
                 } catch (Exception ex) {
                     if (ex instanceof InterruptedException || ex instanceof RejectedExecutionException) {
                         textArea.append("Scan cancelled!" + "\n");
