@@ -40,7 +40,7 @@ set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
-%JAVA_EXE% -version >NUL 2>&1
+%JAVA_EXE% -version >NUL 2>&2
 if %ERRORLEVEL% equ 0 goto execute
 
 echo.
