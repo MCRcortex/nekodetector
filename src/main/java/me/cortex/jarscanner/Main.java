@@ -45,8 +45,13 @@ public class Main {
         int nThreads = Integer.parseInt(args[0]);
         Path dirToCheck = new File(args[1]).toPath();
         boolean emitWalkErrors = false;
+        boolean machineReadableOutput = false;
         if (args.length > 2) {
             emitWalkErrors = Boolean.parseBoolean(args[2]);
+        }
+
+        if (args.length > 3) {
+            machineReadableOutput = Boolean.parseBoolean(args[3]);
         }
 
         // Create log output function
@@ -106,6 +111,13 @@ public class Main {
                         logOutput.apply(Constants.ANSI_RED + "[" + stage2InfectionNumber + "] " + Constants.ANSI_WHITE + stage2Infection + Constants.ANSI_RESET);
                     }
                 }
+                if(machineReadableOutput)
+                {
+                    //printing to stderr instead so this output can be used by a program while the full human-readable logs go to a file
+                    System.err.println("stage1,stage2");
+                    System.err.println(stage1Detections.size()+","+stage2Detections.size());
+                }
+                System.exit(1); //nonzero exit code to indicate infections found
             }
         }
     }
