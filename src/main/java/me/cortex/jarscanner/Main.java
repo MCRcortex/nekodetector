@@ -33,7 +33,7 @@ public class Main {
      * Main method. Checks arguments and scans the specified directory for malicious code signatures. Outputs the
      * results of the scan to the console.
      *
-     * @param args the command line arguments (number of threads, directory to scan, and whether to emit walk errors)
+     * @param args the command line arguments (number of threads, directory to scan, whether to emit walk errors, and whether to output machine-readable CSV)
      */
     public static void main(String[] args) {
         // Check arguments
@@ -97,7 +97,7 @@ public class Main {
      *
      * @param results   the resulting from {@link #run(int, Path, boolean, Function)}.
      * @param logOutput the function to use for logging human-readable output
-     * @param logCSV the function to use for logging machine-readable CSV output, pass null for no CSV output
+     * @param logCSV    the function to use for logging machine-readable CSV output, pass null for no CSV output
      * 
      */
     public static void outputRunResults(Results results, Function<String, String> logOutput, Function<String, String> logCSV) {
