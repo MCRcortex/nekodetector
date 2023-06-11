@@ -60,6 +60,17 @@ public class Main {
             return outputString;
         };
 
+        // Create CSV logging function
+        Function<String, String> logCSV = null;
+
+        //make this not null if CSV output requested
+        if(machineReadableOutput) {
+            logCSV = outputString -> {
+                System.err.println(outputString);
+                return outputString;
+            };
+        }
+
         // Output scan start
         logOutput.apply("Starting scan...");
 
@@ -70,22 +81,26 @@ public class Main {
         } catch (IOException e) {
             logOutput.apply("An error occurred while scanning the directory: " + dirToCheck);
             e.printStackTrace();
+            System.exit(1); //exit code for actual errors, distinct from detections
         } catch (InterruptedException e) {
             logOutput.apply("An error occurred while waiting for the scan to complete.");
             e.printStackTrace();
+            System.exit(1);
         }
 
         // Output scan completion and results
-        outputRunResults(results, logOutput);
+        outputRunResults(results, logOutput, logCSV);
     }
 
     /**
      * Output the results of a scan to the specified log output function.
      *
      * @param results   the resulting from {@link #run(int, Path, boolean, Function)}.
-     * @param logOutput the function to use for logging output
+     * @param logOutput the function to use for logging human-readable output
+     * @param logCSV the function to use for logging machine-readable CSV output, pass null for no CSV output
+     * 
      */
-    public static void outputRunResults(Results results, Function<String, String> logOutput) {
+    public static void outputRunResults(Results results, Function<String, String> logOutput, Function<String, String> logCSV) {
         if (results == null) {
             logOutput.apply("Scan failed. Unable to display results.");
         } else {
@@ -111,13 +126,18 @@ public class Main {
                         logOutput.apply(Constants.ANSI_RED + "[" + stage2InfectionNumber + "] " + Constants.ANSI_WHITE + stage2Infection + Constants.ANSI_RESET);
                     }
                 }
-                if(machineReadableOutput)
+                if(logCSV != null) //if CSV output isn't wanted, just pass in null
                 {
-                    //printing to stderr instead so this output can be used by a program while the full human-readable logs go to a file
-                    System.err.println("stage1,stage2");
-                    System.err.println(stage1Detections.size()+","+stage2Detections.size());
+                    for (int i = 0; i < stage1Detections.size(); i++) {
+                        String stage1Infection = stage1Detections.get(i);
+                        logCSV.apply("1," + stage1Infection);
+                    }
+                    for (int i = 0; i < stage2Detections.size(); i++) {
+                        String stage2Infection = stage2Detections.get(i);
+                        logCSV.apply("2," + stage2Infection);
+                    }
                 }
-                System.exit(1); //nonzero exit code to indicate infections found
+                System.exit(2); //nonzero exit code to indicate infections found
             }
         }
     }
