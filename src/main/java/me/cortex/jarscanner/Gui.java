@@ -83,7 +83,7 @@ public class Gui {
                     };
 
                     Results run = Main.run(4, searchDir, true, logOutput);
-                    Main.outputRunResults(run, logOutput);
+                    Main.outputRunResults(run, logOutput, null);
                     textArea.append("Done scanning!");
                 } catch (Exception ex) {
                     if (ex instanceof InterruptedException || ex instanceof RejectedExecutionException) {

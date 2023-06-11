@@ -33,7 +33,7 @@ public class Main {
      * Main method. Checks arguments and scans the specified directory for malicious code signatures. Outputs the
      * results of the scan to the console.
      *
-     * @param args the command line arguments (number of threads, directory to scan, and whether to emit walk errors)
+     * @param args the command line arguments (number of threads, directory to scan, whether to emit walk errors, and whether to output machine-readable CSV)
      */
     public static void main(String[] args) {
         // Check arguments
@@ -45,8 +45,13 @@ public class Main {
         int nThreads = Integer.parseInt(args[0]);
         Path dirToCheck = new File(args[1]).toPath();
         boolean emitWalkErrors = false;
+        boolean machineReadableOutput = false;
         if (args.length > 2) {
             emitWalkErrors = Boolean.parseBoolean(args[2]);
+        }
+
+        if (args.length > 3) {
+            machineReadableOutput = Boolean.parseBoolean(args[3]);
         }
 
         // Create log output function
@@ -54,6 +59,17 @@ public class Main {
             System.out.println(outputString);
             return outputString;
         };
+
+        // Create CSV logging function
+        Function<String, String> logCSV = null;
+
+        //make this not null if CSV output requested
+        if(machineReadableOutput) {
+            logCSV = outputString -> {
+                System.err.println(outputString);
+                return outputString;
+            };
+        }
 
         // Output scan start
         logOutput.apply("Starting scan...");
@@ -65,22 +81,26 @@ public class Main {
         } catch (IOException e) {
             logOutput.apply("An error occurred while scanning the directory: " + dirToCheck);
             e.printStackTrace();
+            System.exit(1); //exit code for actual errors, distinct from detections
         } catch (InterruptedException e) {
             logOutput.apply("An error occurred while waiting for the scan to complete.");
             e.printStackTrace();
+            System.exit(1);
         }
 
         // Output scan completion and results
-        outputRunResults(results, logOutput);
+        outputRunResults(results, logOutput, logCSV);
     }
 
     /**
      * Output the results of a scan to the specified log output function.
      *
      * @param results   the resulting from {@link #run(int, Path, boolean, Function)}.
-     * @param logOutput the function to use for logging output
+     * @param logOutput the function to use for logging human-readable output
+     * @param logCSV    the function to use for logging machine-readable CSV output, pass null for no CSV output
+     * 
      */
-    public static void outputRunResults(Results results, Function<String, String> logOutput) {
+    public static void outputRunResults(Results results, Function<String, String> logOutput, Function<String, String> logCSV) {
         if (results == null) {
             logOutput.apply("Scan failed. Unable to display results.");
         } else {
@@ -106,6 +126,18 @@ public class Main {
                         logOutput.apply(Constants.ANSI_RED + "[" + stage2InfectionNumber + "] " + Constants.ANSI_WHITE + stage2Infection + Constants.ANSI_RESET);
                     }
                 }
+                if(logCSV != null) //if CSV output isn't wanted, just pass in null
+                {
+                    for (int i = 0; i < stage1Detections.size(); i++) {
+                        String stage1Infection = stage1Detections.get(i);
+                        logCSV.apply("1," + stage1Infection);
+                    }
+                    for (int i = 0; i < stage2Detections.size(); i++) {
+                        String stage2Infection = stage2Detections.get(i);
+                        logCSV.apply("2," + stage2Infection);
+                    }
+                }
+                System.exit(2); //nonzero exit code to indicate infections found
             }
         }
     }
